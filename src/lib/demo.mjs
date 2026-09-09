@@ -1,2 +1,55 @@
-import {shiftDate,monday} from '../../public/shared/history.mjs';
-export function demoSnapshots(today){const events=[];const week=monday(today);let seq=0;const add=date=>{for(const [exercise,name,weight] of [['backSquat','Back Squat',315],['benchPress','Bench Press',225],['deadlift','Deadlift',360]])events.push({id:`demo-${seq++}`,source:'bulgarian',date,exercise,name,success:true,singleCompleted:true,weight,unit:'lb',sets:1,reps:1,outcome:'completed',countsDay:true});};for(let w=12;w>=1;w--)for(const day of [0,2,4,5]){if(w<=7&&day===5)continue;add(shiftDate(week,-7*w+day));}for(const day of [0,2,4,5]){const date=shiftDate(week,day);if(date<=today)add(date);}const accessory=events.filter((_,i)=>i%9===0).map((e,i)=>({...e,id:`demo-accessory-${i}`,source:'accessory',exercise:'lat-pulldown',name:'Lat Pulldown',singleCompleted:false,weight:95,sets:3,reps:8,outcome:'success'}));return {bulgarian:{schema:1,source:'bulgarian',events},accessory:{schema:1,source:'accessory',events:accessory}};}
+import { shiftDate, monday } from "../../public/shared/history.mjs";
+export function demoSnapshots(today) {
+  const events = [];
+  const week = monday(today);
+  let seq = 0;
+  const add = (date) => {
+    for (const [exercise, name, weight] of [
+      ["backSquat", "Back Squat", 315],
+      ["benchPress", "Bench Press", 225],
+      ["deadlift", "Deadlift", 360],
+    ])
+      events.push({
+        id: `demo-${seq++}`,
+        source: "bulgarian",
+        date,
+        exercise,
+        name,
+        success: true,
+        singleCompleted: true,
+        weight,
+        unit: "lb",
+        sets: 1,
+        reps: 1,
+        outcome: "completed",
+        countsDay: true,
+      });
+  };
+  for (let w = 12; w >= 1; w--)
+    for (const day of [0, 2, 4, 5]) {
+      if (w <= 7 && day === 5) continue;
+      add(shiftDate(week, -7 * w + day));
+    }
+  for (const day of [0, 2, 4, 5]) {
+    const date = shiftDate(week, day);
+    if (date <= today) add(date);
+  }
+  const accessory = events
+    .filter((_, i) => i % 9 === 0)
+    .map((e, i) => ({
+      ...e,
+      id: `demo-accessory-${i}`,
+      source: "accessory",
+      exercise: "lat-pulldown",
+      name: "Lat Pulldown",
+      singleCompleted: false,
+      weight: 95,
+      sets: 3,
+      reps: 8,
+      outcome: "success",
+    }));
+  return {
+    bulgarian: { schema: 1, source: "bulgarian", events },
+    accessory: { schema: 1, source: "accessory", events: accessory },
+  };
+}

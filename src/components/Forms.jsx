@@ -1,2 +1,84 @@
-import {useState} from 'react';import {FORMS} from '../lib/scoring.mjs';import {Icon} from './Icons';import {weight} from './Dashboard';
-export function Forms({strength,unit,selected,onSelect}){const [family,setFamily]=useState('Main path');const families=['Main path',...new Set(FORMS.map(f=>f.family))];const forms=FORMS.filter(f=>family==='Main path'?f.main:f.family===family);return <><div className="page-heading"><h1>Find your next form.</h1><p>{strength.unlocked.length} / {FORMS.length} forms unlocked through recorded strength.</p></div><div className="notice subtle"><Icon name="info"/><p>Earn forms with your best squat + bench + deadlift total. Choose any unlocked form for your dashboard. These are custom game milestones, not an official power ranking.</p></div><div className="filter-rail" aria-label="Transformation families">{families.map(f=><button key={f} className={family===f?'active':''} onClick={()=>setFamily(f)} aria-pressed={family===f}>{f}</button>)}</div><div className="form-list">{forms.map(f=>{const unlocked=strength.complete&&strength.total>=f.threshold;const isSelected=(selected||strength.form?.id)===f.id;return <button key={f.id} className={`form-row ${unlocked?'unlocked':''} ${isSelected?'selected':''}`} disabled={!unlocked} onClick={()=>onSelect(f.id)}><span className="form-symbol" style={{color:f.color}}><Icon name={unlocked?'forms':'lock'} size={27}/></span><span className="form-detail"><strong>{f.name}</strong><span>{f.threshold===0?'Record all three lifts':`${weight(f.threshold,unit)} ${unit} total`}</span></span><span className="form-state">{isSelected?<Icon name="check"/>:unlocked?'Equip':strength.complete?`${weight(f.threshold-strength.total,unit)} ${unit} away`:'Locked'}</span></button>})}</div><p className="footnote">Collection spans Z, Super, GT, DAIMA and selected game forms. Alternate forms share milestones; transformations, techniques and fusions are grouped for fun.</p></>}
+import { useState } from "react";
+import { FORMS } from "../lib/scoring.mjs";
+import { Icon } from "./Icons";
+import { weight } from "./Dashboard";
+export function Forms({ strength, unit, selected, onSelect }) {
+  const [family, setFamily] = useState("Main path");
+  const families = ["Main path", ...new Set(FORMS.map((f) => f.family))];
+  const forms = FORMS.filter((f) =>
+    family === "Main path" ? f.main : f.family === family,
+  );
+  return (
+    <>
+      <div className="page-heading">
+        <h1>Find your next form.</h1>
+        <p>
+          {strength.unlocked.length} / {FORMS.length} forms unlocked through
+          recorded strength.
+        </p>
+      </div>
+      <div className="notice subtle">
+        <Icon name="info" />
+        <p>
+          Earn forms with your best squat + bench + deadlift total. Choose any
+          unlocked form for your dashboard. These are custom game milestones,
+          not an official power ranking.
+        </p>
+      </div>
+      <div className="filter-rail" aria-label="Transformation families">
+        {families.map((f) => (
+          <button
+            key={f}
+            className={family === f ? "active" : ""}
+            onClick={() => setFamily(f)}
+            aria-pressed={family === f}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+      <div className="form-list">
+        {forms.map((f) => {
+          const unlocked = strength.complete && strength.total >= f.threshold;
+          const isSelected = (selected || strength.form?.id) === f.id;
+          return (
+            <button
+              key={f.id}
+              className={`form-row ${unlocked ? "unlocked" : ""} ${isSelected ? "selected" : ""}`}
+              disabled={!unlocked}
+              onClick={() => onSelect(f.id)}
+            >
+              <span className="form-symbol" style={{ color: f.color }}>
+                <Icon name={unlocked ? "forms" : "lock"} size={27} />
+              </span>
+              <span className="form-detail">
+                <strong>{f.name}</strong>
+                <span>
+                  {f.threshold === 0
+                    ? "Record all three lifts"
+                    : `${weight(f.threshold, unit)} ${unit} total`}
+                </span>
+              </span>
+              <span className="form-state">
+                {isSelected ? (
+                  <Icon name="check" />
+                ) : unlocked ? (
+                  "Equip"
+                ) : strength.complete ? (
+                  `${weight(f.threshold - strength.total, unit)} ${unit} away`
+                ) : (
+                  "Locked"
+                )}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <p className="footnote">
+        Collection spans Z, Super, GT, DAIMA and selected game forms. Alternate
+        forms share milestones; transformations, techniques and fusions are
+        grouped for fun.
+      </p>
+    </>
+  );
+}
