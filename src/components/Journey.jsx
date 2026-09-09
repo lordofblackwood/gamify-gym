@@ -172,7 +172,7 @@ function Ladder({ progression: p, unit, onInspect }) {
     </>
   );
 }
-function PersonalForms({ progression: p, unit }) {
+function PersonalForms({ progression: p, potential, unit }) {
   return (
     <>
       <p className="journey-intro">
@@ -184,10 +184,11 @@ function PersonalForms({ progression: p, unit }) {
         {TRANSFORMATIONS.map((f) => {
           const reached = f.powerLevel <= p.powerLevel,
             current = f.id === p.transformation.id;
+          const unrealized = !reached && potential.progression?.transformation.id === f.id;
           return (
             <article
               key={f.id}
-              className={`personal-form ${current ? "current" : ""} ${reached ? "reached" : ""}`}
+              className={`personal-form ${current ? "current" : ""} ${reached ? "reached" : ""} ${unrealized ? "unrealized" : ""}`}
             >
               <span className="form-flare" style={{ color: f.color }}>
                 <Icon name={reached ? "forms" : "lock"} size={25} />
@@ -201,7 +202,7 @@ function PersonalForms({ progression: p, unit }) {
                 </span>
               </div>
               <span className="small form-stage-state">
-                {current ? "Current" : reached ? "Unlocked" : "Ahead"}
+                {current ? "Current" : reached ? "Unlocked" : unrealized ? "Unrealized · not earned" : "Ahead"}
               </span>
             </article>
           );
@@ -380,7 +381,7 @@ export function Journey({ strength, unit, onInspect }) {
       {section === "ladder" ? (
         <Ladder progression={p} unit={unit} onInspect={onInspect} />
       ) : section === "forms" ? (
-        <PersonalForms progression={p} unit={unit} />
+        <PersonalForms progression={p} potential={strength.potential} unit={unit} />
       ) : (
         <PRPreview key={unit} strength={strength} unit={unit} />
       )}
@@ -388,7 +389,9 @@ export function Journey({ strength, unit, onInspect }) {
         <summary>How your power is calculated</summary>
         <p>
           Your strength score is your best successful squat + bench press +
-          deadlift in pounds. Power grows smoothly between fixed score anchors
+          deadlift singles in pounds. Estimated 1RMs only reveal unrealized potential;
+          they never increase actual power or unlock earned transformations.
+          Power grows smoothly between fixed score anchors
           on a logarithmic scale: 600 lb = 18,000; 900 lb = 3,000,000; 1,200 lb
           = 900,000,000. It is a fantasy translation of your lifts, not a
           physical measurement or a population ranking.

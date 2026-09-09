@@ -21,6 +21,7 @@ export function demoSnapshots(today) {
         unit: "lb",
         sets: 1,
         reps: 1,
+        repSet: { weight: weight - 50, reps: 10 },
         outcome: "completed",
         countsDay: true,
       });
@@ -43,6 +44,7 @@ export function demoSnapshots(today) {
       exercise: "lat-pulldown",
       name: "Lat Pulldown",
       singleCompleted: false,
+      repSet: undefined,
       weight: 95,
       sets: 3,
       reps: 8,

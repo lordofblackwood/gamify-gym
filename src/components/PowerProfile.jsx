@@ -1,5 +1,6 @@
 import { Meter, weight } from "./Dashboard";
 import { Icon } from "./Icons";
+import { UnrealizedPotential } from "./UnrealizedPotential";
 import { powerLabel, exactPowerLabel } from "../lib/progression.mjs";
 export function comparisonName(items) {
   if (!items?.length) return "Your journey starts here";
@@ -49,13 +50,13 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
     >
       <div className="power-profile-top">
         <div className="power-readout">
-          <span className="eyebrow">ESTIMATED POWER LEVEL</span>
+          <span className="eyebrow">PROVEN POWER LEVEL</span>
           <div className="fighter-power" title={exactPowerLabel(p.powerLevel)}>
             {powerLabel(p.powerLevel)}
           </div>
           <p className="small muted">
             {p.calibrated
-              ? "App progression scale"
+              ? "From completed singles · app scale"
               : "Starting power · awaiting lift records"}
           </p>
         </div>
@@ -115,6 +116,7 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
           {weight(p.scoreToNext, unit)} {unit} to go
         </p>
       ) : null}
+      <UnrealizedPotential strength={data} unit={unit} />
     </section>
   );
 }

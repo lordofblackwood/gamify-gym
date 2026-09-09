@@ -1638,3 +1638,23 @@ dialog.modal::backdrop {
  .benchmark-row { grid-template-columns:20px minmax(0,1fr) 76px; gap:8px; }
  .benchmark-row-body strong { font-size:12px; }
 }
+
+/* Rep-set potential is visually separate and never styled as an earned form. */
+.unrealized-potential { margin-top: 24px; padding: 20px 0 0; border-top: 1px dashed var(--border); }
+.potential-heading { display: flex; align-items: center; gap: 9px; color: var(--muted); }
+.potential-heading .eyebrow { font-size: 10px; letter-spacing: .13em; }
+.potential-status { margin-left: auto; white-space: nowrap; font-size: 11px; color: var(--muted); }
+.has-potential .potential-heading, .has-potential h3, .potential-power { color: var(--violet); }
+.unrealized-potential h3 { margin: 14px 0 4px; font: 600 29px/1.15 'Barlow Condensed', sans-serif; }
+.potential-subtitle, .potential-empty { color: var(--muted); font-size: 13px; line-height: 1.6; margin: 9px 0; }
+.potential-power { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin: 16px 0 8px; }
+.potential-power strong { font: 600 clamp(32px, 6vw, 44px)/1 'Barlow Condensed', sans-serif; overflow-wrap: anywhere; }
+.potential-power span { color: var(--muted); font-size: 12px; }
+.potential-evidence { margin-top: 14px; }
+.potential-evidence summary { min-height: 44px; align-content: center; color: var(--text); cursor: pointer; font-size: 13px; font-weight: 600; }
+.potential-lifts { display: grid; gap: 14px; margin: 12px 0 20px; }
+.potential-lift { display: grid; gap: 7px; border-bottom: 1px solid var(--border); padding-bottom: 14px; font-size: 13px; }
+.potential-lift-values { display: flex; flex-wrap: wrap; gap: 8px 24px; color: var(--muted); }
+.potential-lift-values b { margin-left: 6px; color: var(--text); font-weight: 600; }
+.personal-form.unrealized { border: 1px dashed var(--violet); background: transparent; }
+.personal-form.unrealized .form-stage-state { color: var(--violet); }

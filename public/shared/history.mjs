@@ -71,6 +71,18 @@ export function normalizeHistory(source, raw) {
           unit: "lb",
           sets: 1,
           reps: 1,
+          // Only completed backoff work is evidence; prescriptions alone are not.
+          ...(h.result === "completed" &&
+          h.backoffWorkCompleted !== false &&
+          finite(h.backoffWeight) &&
+          h.backoffWeight > 0 &&
+          Number.isInteger(h.backoffSets) &&
+          h.backoffSets > 0 &&
+          Number.isInteger(h.backoffReps) &&
+          h.backoffReps >= 2 &&
+          h.backoffReps <= 10
+            ? { repSet: { weight: h.backoffWeight, reps: h.backoffReps } }
+            : {}),
           outcome: h.result,
           countsDay: true,
         });
@@ -177,6 +189,20 @@ export function validateSnapshot(s, source) {
       check(
         e.exercise in LIFTS && e.unit === "lb" && finite(e.weight),
         "Invalid synced lift.",
+      );
+    if (e.repSet !== undefined)
+      check(
+        source === "bulgarian" &&
+          e.success &&
+          e.outcome === "completed" &&
+          e.singleCompleted &&
+          e.repSet &&
+          finite(e.repSet.weight) &&
+          e.repSet.weight > 0 &&
+          Number.isInteger(e.repSet.reps) &&
+          e.repSet.reps >= 2 &&
+          e.repSet.reps <= 10,
+        "Invalid synced rep-set evidence.",
       );
     ids.add(e.id);
   }

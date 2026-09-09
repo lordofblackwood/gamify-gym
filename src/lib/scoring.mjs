@@ -1,5 +1,6 @@
 import { LIFTS, shiftDate, monday } from "../../public/shared/history.mjs";
 import { progressionFromScore } from "./progression.mjs";
+import { unrealizedPotential } from "./potential.mjs";
 export const RANKS = [
   ["Iron", 0, "#a6a9b8"],
   ["Bronze", 15, "#c6947b"],
@@ -31,6 +32,7 @@ export function strength(events) {
     complete,
     known: known.length,
     progression: progressionFromScore(total, { calibrated: complete }),
+    potential: unrealizedPotential(events, records),
   };
 }
 export function consistency(events, today, target = 4) {
