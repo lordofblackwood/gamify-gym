@@ -34,17 +34,15 @@ test("normalization syncs completed backoff evidence without creating extra even
   assert.equal(s.events.find((e) => e.exercise === "deadlift").reps, 1);
   validateSnapshot(s, "bulgarian");
 });
-test("higher e1RM reveals an unrealized transformation without earning actual power", () => {
+test("higher e1RM reveals unrealized power without changing earned strength", () => {
   const s = normalized(), baseline = strength(withoutEvidence(s).events);
   const actual = strength(s.events);
   assert.equal(actual.total, 1045);
   assert.deepEqual(actual.progression, baseline.progression);
-  assert.equal(actual.progression.transformation.name, "Crimson Drive XX");
-  assert.equal(actual.potential.progression.transformation.name, "Radiant Ascension I");
   assert.ok(actual.potential.progression.powerLevel > actual.progression.powerLevel);
   assert.equal(actual.potential.lifts.find((e) => e.id === "benchPress").projected, 300);
   assert.ok(Math.abs(actual.potential.total - 1052.5) < 1e-8);
-  assert.ok(!actual.progression.unlockedTransformations.some((f) => f.name === "Radiant Ascension I"));
+  assert.deepEqual(actual.progression.unlockedTransformations, baseline.progression.unlockedTransformations);
   assert.deepEqual(dashboard({bulgarian:s},today).consistency, dashboard({bulgarian:withoutEvidence(s)},today).consistency);
 });
 test("estimates below actual do not reduce totals, add power or reveal a false gap", () => {
@@ -73,7 +71,7 @@ test("successful singles realize the estimate and remove the unrealized gap", ()
   const result = strength(updated);
   assert.equal(result.potential.hasPotential, false);
   assert.equal(result.potential.progression, null);
-  assert.equal(result.progression.transformation.name, "Radiant Ascension I");
+  assert.deepEqual(result.progression, p.progression);
 });
 test("failed, incomplete, unsupported and missing rep sets never become evidence", () => {
   for (const change of [

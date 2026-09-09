@@ -6,29 +6,28 @@ import {
 import { TRANSFORMATIONS } from "../data/transformations.mjs";
 export { BENCHMARKS, BENCHMARK_BY_ID, SCALE_VERSION, TRANSFORMATIONS };
 
-// Strength score is the sum of best recorded squat/bench/deadlift singles in lb.
-// Geometric interpolation gives continuous growth across 22 orders of magnitude.
-// Milestones are fantasy game tuning, not population percentiles or strength standards.
+// Reference score blends community and competition comparisons, equally per lift.
+// Dragon Ball power anchors remain game design, not measured human power.
 export const POWER_ANCHORS = Object.freeze(
   [
     [0, 5],
-    [150, 10],
-    [300, 180],
-    [450, 1500],
-    [600, 18000],
-    [750, 90000],
-    [900, 3000000],
-    [1050, 150000000],
-    [1200, 900000000],
-    [1350, 5000000000],
-    [1500, 600000000000],
-    [1650, 30000000000000],
-    [1800, 400000000000000],
-    [1950, 4000000000000000],
-    [2100, 10000000000000000],
-    [2250, 1000000000000000000],
-    [2400, 100000000000000000000],
-    [2550, 10000000000000000000000],
+    [5, 10],
+    [10, 180],
+    [15, 1500],
+    [20, 18000],
+    [25, 90000],
+    [30, 3000000],
+    [40, 150000000],
+    [50, 900000000],
+    [60, 5000000000],
+    [70, 600000000000],
+    [80, 30000000000000],
+    [85, 400000000000000],
+    [90, 4000000000000000],
+    [95, 10000000000000000],
+    [98, 1000000000000000000],
+    [99.5, 100000000000000000000],
+    [100, 10000000000000000000000],
   ].map(([score, power]) => Object.freeze({ score, power })),
 );
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -40,8 +39,7 @@ export function powerFromScore(input) {
   const last = POWER_ANCHORS.at(-1);
   if (score >= last.score)
     return (
-      last.power *
-      Math.exp(Math.min(100, (score - last.score) / 150) * Math.LN10)
+      last.power * Math.exp(Math.min(100, (score - last.score) / 5) * Math.LN10)
     );
   const upper = POWER_ANCHORS.findIndex((a) => a.score > score);
   const a = POWER_ANCHORS[upper - 1],
@@ -56,7 +54,7 @@ export function scoreForPower(input) {
   const power = Math.max(5, finiteNonnegative(input));
   const last = POWER_ANCHORS.at(-1);
   if (power >= last.power)
-    return last.score + 150 * Math.log10(power / last.power);
+    return last.score + 5 * Math.log10(power / last.power);
   const upper = POWER_ANCHORS.findIndex((a) => a.power > power);
   const a = POWER_ANCHORS[upper - 1],
     b = POWER_ANCHORS[upper];

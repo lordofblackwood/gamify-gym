@@ -11,6 +11,7 @@ import {
 } from "./components/Dashboard";
 import { Journey } from "./components/Journey";
 import { FighterProfile } from "./components/FighterProfile";
+import { StrengthReferences } from "./components/StrengthReferences";
 import { PowerProfile } from "./components/PowerProfile";
 import { BenchmarkDetail } from "./components/BenchmarkDetail";
 import { Ranked } from "./components/Ranked";
@@ -67,8 +68,14 @@ export default function App() {
     [demo, store.today, store.snapshots],
   );
   const data = useMemo(
-    () => dashboard(snapshots, store.today, store.prefs.target),
-    [snapshots, store.today, store.prefs.target],
+    () =>
+      dashboard(
+        snapshots,
+        store.today,
+        store.prefs.target,
+        store.prefs.profile,
+      ),
+    [snapshots, store.today, store.prefs.target, store.prefs.profile],
   );
   const hasData = data.events.length > 0;
   return (
@@ -169,6 +176,7 @@ export default function App() {
             ) : null}
             <FighterProfile
               profile={store.prefs.profile}
+              unit={store.prefs.unit}
               onSave={(profile) => store.preferences({ profile })}
             />
             <div className="hero-grid fighter-grid">
@@ -183,6 +191,10 @@ export default function App() {
                 onRank={() => navigate("rank")}
               />
             </div>
+            <StrengthReferences
+              strength={data.strength}
+              unit={store.prefs.unit}
+            />
             <Rhythm data={data.consistency} today={store.today} />
             <div className="lower-grid">
               <LiftRecords data={data.strength} unit={store.prefs.unit} />

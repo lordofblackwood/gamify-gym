@@ -7,9 +7,8 @@ import {
   benchmarkEvidence,
 } from "../lib/progression.mjs";
 import { SOURCES, TIERS } from "../data/benchmarks.mjs";
-import { weight } from "./Dashboard";
 import { Icon } from "./Icons";
-export function BenchmarkDetail({ id, progression, unit, onClose }) {
+export function BenchmarkDetail({ id, progression, onClose }) {
   const dialog = useRef(null);
   const b = BENCHMARK_BY_ID[id];
   useEffect(() => {
@@ -56,10 +55,8 @@ export function BenchmarkDetail({ id, progression, unit, onClose }) {
           <dd>{TIERS.find((t) => t.id === b.tier)?.name}</dd>
         </div>
         <div>
-          <dt>Strength milestone</dt>
-          <dd>
-            {weight(scoreForPower(b.powerLevel), unit)} {unit} three-lift total
-          </dd>
+          <dt>Reference score milestone</dt>
+          <dd>{scoreForPower(b.powerLevel).toFixed(2)} reference points</dd>
         </div>
         <div>
           <dt>Your progress</dt>
@@ -68,7 +65,7 @@ export function BenchmarkDetail({ id, progression, unit, onClose }) {
               ? "Record all three lifts to calibrate"
               : needed < 1e-7
                 ? "Benchmark reached"
-                : `${weight(needed, unit)} ${unit} total to go`}
+                : `${needed.toFixed(2)} reference points to go`}
           </dd>
         </div>
       </dl>

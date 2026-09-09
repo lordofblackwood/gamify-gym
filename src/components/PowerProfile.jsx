@@ -56,7 +56,7 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
           </div>
           <p className="small muted">
             {p.calibrated
-              ? "From completed singles · app scale"
+              ? "Completed singles · public lifting references"
               : "Starting power · awaiting lift records"}
           </p>
         </div>
@@ -112,8 +112,8 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
       </div>
       {p.calibrated && !p.isMax ? (
         <p className="next-lift-target small muted">
-          Next benchmark at {weight(p.nextScore, unit)} {unit} total ·{" "}
-          {weight(p.scoreToNext, unit)} {unit} to go
+          Reference score {p.score.toFixed(2)} · {p.scoreToNext.toFixed(2)}{" "}
+          points to the next benchmark
         </p>
       ) : null}
       <UnrealizedPotential strength={data} unit={unit} />

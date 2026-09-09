@@ -217,12 +217,13 @@ test("replacement snapshots reflect undo and corrections", () => {
 test("consistency rank thresholds are strictly increasing", () => {
   RANKS.slice(1).forEach((r, i) => assert.ok(r.min > RANKS[i].min));
 });
-test("900 lb total maps to recovered Namek Goku without changing identity", () => {
-  const s = strength(three);
-  assert.equal(s.progression.powerLevel, 3000000);
-  assert.equal(s.progression.current.id, "goku-namek-recovered");
-  assert.equal(s.progression.transformation.name, "Crimson Drive XX");
-  assert.equal(s.progression.progress, 0);
+test("strength uses public comparisons instead of the previous fixed pound scale", () => {
+  const s = strength(normalizeHistory("bulgarian", rawBulgarian()).events);
+  assert.equal(s.total, 900);
+  assert.equal(s.reference.communitySource, "Hardy");
+  assert.ok(s.reference.score > 60 && s.reference.score < 62);
+  assert.equal(s.progression.current.id, "goku-ssj3");
+  assert.equal(s.progression.score, s.reference.score);
 });
 test("connection code has 256 bits and rejects invalid input", () => {
   const code = newCode();

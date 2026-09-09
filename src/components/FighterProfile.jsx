@@ -6,6 +6,7 @@ import {
   profileInitials,
 } from "../lib/profile.mjs";
 import { Icon } from "./Icons";
+import { LB_PER_KG, CATEGORY_RANGES } from "../lib/strength-comparison.mjs";
 export function FighterAvatar({ profile, small = false }) {
   return (
     <svg
@@ -66,9 +67,27 @@ export function FighterAvatar({ profile, small = false }) {
     </svg>
   );
 }
-function ProfileEditor({ profile, onSave, onClose }) {
+function ProfileEditor({ profile, unit, onSave, onClose }) {
   const dialog = useRef(null);
   const [draft, setDraft] = useState(profile);
+  const factor = unit === "kg" ? 1 : LB_PER_KG;
+  const [bodyweight, setBodyweight] = useState(
+    profile.bodyweightKg
+      ? String(Number((profile.bodyweightKg * factor).toFixed(2)))
+      : "",
+  );
+  const [weightChanged, setWeightChanged] = useState(false);
+  const range = CATEGORY_RANGES[draft.referenceCategory];
+  const enteredKg = weightChanged
+    ? bodyweight === ""
+      ? null
+      : Number(bodyweight) / factor
+    : profile.bodyweightKg;
+  const canMatch =
+    range &&
+    enteredKg !== null &&
+    enteredKg >= range[0] &&
+    enteredKg <= range[1];
   useEffect(() => {
     dialog.current?.showModal();
   }, []);
@@ -83,7 +102,7 @@ function ProfileEditor({ profile, onSave, onClose }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onSave(normalizeProfile(draft));
+          onSave(normalizeProfile({ ...draft, bodyweightKg: enteredKg }));
           onClose();
         }}
       >
@@ -147,6 +166,74 @@ function ProfileEditor({ profile, onSave, onClose }) {
             ))}
           </div>
         </fieldset>
+        <fieldset className="comparison-settings">
+          <legend>Strength comparison</legend>
+          <label htmlFor="comparison-mode">Compare my lifts by</label>
+          <select
+            id="comparison-mode"
+            value={draft.comparisonMode}
+            onChange={(e) =>
+              setDraft({ ...draft, comparisonMode: e.target.value })
+            }
+          >
+            <option value="absolute">Absolute strength · all categories</option>
+            <option value="relative">Bodyweight and category</option>
+          </select>
+          {draft.comparisonMode === "relative" ? (
+            <>
+              <label htmlFor="reference-category">
+                Published reference category
+              </label>
+              <select
+                id="reference-category"
+                value={draft.referenceCategory}
+                onChange={(e) =>
+                  setDraft({ ...draft, referenceCategory: e.target.value })
+                }
+              >
+                <option value="">Choose a reference</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+              </select>
+              <label htmlFor="fighter-bodyweight">
+                Comparison bodyweight ({unit})
+              </label>
+              <input
+                id="fighter-bodyweight"
+                type="number"
+                inputMode="decimal"
+                step="any"
+                min={20 * factor}
+                max={400 * factor}
+                value={bodyweight}
+                onChange={(e) => {
+                  setBodyweight(e.target.value);
+                  setWeightChanged(true);
+                }}
+              />
+              <p className="small muted">
+                Uses your current comparison weight for all historical bests.
+                The published tables support male references at 50–140 kg and
+                female references at 40–120 kg.
+              </p>
+              {!canMatch ? (
+                <p className="small comparison-fallback" role="status">
+                  Absolute comparison will be used until a supported category
+                  and bodyweight are saved.
+                </p>
+              ) : null}
+            </>
+          ) : (
+            <p className="small muted">
+              Compares the weight you lifted with all categories combined. No
+              bodyweight or category is needed.
+            </p>
+          )}
+          <p className="small muted">
+            Changing these settings recalibrates your power. They stay on this
+            device and are never sent to the benchmark providers.
+          </p>
+        </fieldset>
         <p className="small muted">
           Your identity stays yours at every power level. Saved on this device.
         </p>
@@ -162,7 +249,7 @@ function ProfileEditor({ profile, onSave, onClose }) {
     </dialog>
   );
 }
-export function FighterProfile({ profile, onSave }) {
+export function FighterProfile({ profile, unit, onSave }) {
   const [editing, setEditing] = useState(false);
   return (
     <>
@@ -185,6 +272,7 @@ export function FighterProfile({ profile, onSave }) {
       {editing ? (
         <ProfileEditor
           profile={profile}
+          unit={unit}
           onSave={onSave}
           onClose={() => setEditing(false)}
         />

@@ -1,3 +1,4 @@
+import { previewStrength } from "../lib/strength-comparison.mjs";
 import { useMemo, useState } from "react";
 import {
   BENCHMARKS,
@@ -5,7 +6,6 @@ import {
   findBenchmarks,
   powerLabel,
   exactPowerLabel,
-  progressionFromScore,
   scoreForPower,
   benchmarkEvidence,
 } from "../lib/progression.mjs";
@@ -137,7 +137,7 @@ function Ladder({ progression: p, unit, onInspect }) {
                 <strong>{b.displayName}</strong>
                 <span className="benchmark-row-meta">
                   {benchmarkEvidence(b)} ·{" "}
-                  {weight(scoreForPower(b.powerLevel), unit)} {unit} total
+                  {scoreForPower(b.powerLevel).toFixed(2)} reference points
                 </span>
               </span>
               <span className="benchmark-row-power">
@@ -184,7 +184,8 @@ function PersonalForms({ progression: p, potential, unit }) {
         {TRANSFORMATIONS.map((f) => {
           const reached = f.powerLevel <= p.powerLevel,
             current = f.id === p.transformation.id;
-          const unrealized = !reached && potential.progression?.transformation.id === f.id;
+          const unrealized =
+            !reached && potential.progression?.transformation.id === f.id;
           return (
             <article
               key={f.id}
@@ -198,11 +199,17 @@ function PersonalForms({ progression: p, potential, unit }) {
                 <p>{f.inspiration}</p>
                 <span className="small muted">
                   PL {powerLabel(f.powerLevel, { compact: true })} ·{" "}
-                  {weight(scoreForPower(f.powerLevel), unit)} {unit} total
+                  {scoreForPower(f.powerLevel).toFixed(2)} reference points
                 </span>
               </div>
               <span className="small form-stage-state">
-                {current ? "Current" : reached ? "Unlocked" : unrealized ? "Unrealized · not earned" : "Ahead"}
+                {current
+                  ? "Current"
+                  : reached
+                    ? "Unlocked"
+                    : unrealized
+                      ? "Unrealized · not earned"
+                      : "Ahead"}
               </span>
             </article>
           );
@@ -221,9 +228,12 @@ function PRPreview({ strength, unit }) {
     Number(delta) >= 0 &&
     Number(delta) <= 200;
   const increase = valid ? Number(delta) * (unit === "kg" ? kg : 1) : 0;
-  const projected = progressionFromScore(strength.total + increase, {
-    calibrated: strength.complete,
-  });
+  const projected = previewStrength(
+    strength.records,
+    strength.comparisonProfile,
+    lift,
+    increase,
+  );
   return (
     <section className="panel pr-preview">
       <h2>Your next personal best.</h2>
@@ -381,25 +391,30 @@ export function Journey({ strength, unit, onInspect }) {
       {section === "ladder" ? (
         <Ladder progression={p} unit={unit} onInspect={onInspect} />
       ) : section === "forms" ? (
-        <PersonalForms progression={p} potential={strength.potential} unit={unit} />
+        <PersonalForms
+          progression={p}
+          potential={strength.potential}
+          unit={unit}
+        />
       ) : (
         <PRPreview key={unit} strength={strength} unit={unit} />
       )}
       <details className="panel scale-explainer">
         <summary>How your power is calculated</summary>
         <p>
-          Your strength score is your best successful squat + bench press +
-          deadlift singles in pounds. Estimated 1RMs only reveal unrealized potential;
-          they never increase actual power or unlock earned transformations.
-          Power grows smoothly between fixed score anchors
-          on a logarithmic scale: 600 lb = 18,000; 900 lb = 3,000,000; 1,200 lb
-          = 900,000,000. It is a fantasy translation of your lifts, not a
-          physical measurement or a population ranking.
+          Each completed squat, bench and deadlift single is compared with
+          public gym-lifter and competition benchmarks. Each source gets half
+          the weight; all three lifts contribute equally. This creates a
+          reference score, not a percentile of the general population. The Home
+          page shows each comparison, its source and methodology. Estimated 1RMs
+          only reveal unrealized potential; they never increase actual power or
+          unlock earned transformations. The same reference curves apply to both
+          actual and potential power.
         </p>
         <p>
-          The bar shows your progress through the strength interval to the next
-          benchmark. Even a small PR moves the number. All three lifts are
-          required to calibrate; until then you start at Farmer, power 5.
+          The bar shows your progress through the reference-score interval to
+          the next benchmark. Even a small PR moves the number. All three lifts
+          are required to calibrate; until then you start at Farmer, power 5.
           Correcting or removing a PR recalculates your position.
         </p>
         <p>
@@ -411,8 +426,9 @@ export function Journey({ strength, unit, onInspect }) {
         </p>
         <p>
           Consistency is tracked separately through your League-style rank.
-          Workout frequency does not inflate this strength score. Profile
-          changes and the PR preview do not affect either system.
+          Workout frequency does not inflate strength. Changing your comparison
+          category or bodyweight recalibrates power; editing your name or aura
+          does not. The PR preview never changes either system.
         </p>
       </details>
     </>

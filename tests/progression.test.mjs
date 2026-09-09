@@ -93,7 +93,7 @@ test("every anchor is exact, and its inverse recovers the strength score", () =>
 });
 test("power grows continuously across every anchor, including the final milestone", () => {
   let previous = 0;
-  for (let score = 0; score <= 2700; score += 0.5) {
+  for (let score = 0; score <= 150; score += 0.025) {
     const power = powerFromScore(score);
     assert.ok(power > previous);
     close(scoreForPower(power), score);
@@ -148,11 +148,11 @@ test("incomplete lift data remains an explicit starting profile", () => {
 });
 test("personal transformations advance separately from benchmark names", () => {
   assert.equal(
-    progressionFromScore(900).transformation.name,
+    progressionFromScore(30).transformation.name,
     "Crimson Drive XX",
   );
   assert.equal(
-    progressionFromScore(1050).transformation.name,
+    progressionFromScore(40).transformation.name,
     "Radiant Ascension I",
   );
   for (const f of TRANSFORMATIONS)
@@ -166,8 +166,8 @@ test("personal transformations advance separately from benchmark names", () => {
   );
 });
 test("summit has no fabricated next opponent but allows further numerical growth", () => {
-  const p = progressionFromScore(2550),
-    after = progressionFromScore(2560);
+  const p = progressionFromScore(100),
+    after = progressionFromScore(101);
   assert.equal(p.current.id, "zeno");
   assert.equal(p.previous.id, "grand-priest");
   assert.equal(p.next, null);
@@ -203,6 +203,9 @@ test("profile normalization migrates absent data without using benchmark identit
     name: "Your fighter",
     aura: "#d7fb79",
     avatar: "orbit",
+    comparisonMode: "absolute",
+    referenceCategory: "",
+    bodyweightKg: null,
   });
   assert.equal(normalizeProfile({ name: "  Nova  " }).name, "Nova");
   assert.equal(normalizeProfile({ name: "x".repeat(50) }).name.length, 32);

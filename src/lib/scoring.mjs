@@ -1,5 +1,5 @@
 import { LIFTS, shiftDate, monday } from "../../public/shared/history.mjs";
-import { progressionFromScore } from "./progression.mjs";
+import { compareStrength } from "./strength-comparison.mjs";
 import { unrealizedPotential } from "./potential.mjs";
 export const RANKS = [
   ["Iron", 0, "#a6a9b8"],
@@ -13,7 +13,7 @@ export const RANKS = [
   ["Grandmaster", 98, "#fa888e"],
   ["Challenger", 100, "#f7d78b"],
 ].map(([name, min, color], i) => ({ name, min, color, index: i }));
-export function strength(events) {
+export function strength(events, profile = {}) {
   const records = Object.fromEntries(Object.keys(LIFTS).map((k) => [k, null]));
   for (const e of events)
     if (
@@ -26,13 +26,16 @@ export function strength(events) {
   const known = Object.values(records).filter(Boolean);
   const total = known.reduce((s, e) => s + e.weight, 0);
   const complete = known.length === 3;
+  const reference = compareStrength(records, profile);
   return {
     records,
     total,
     complete,
     known: known.length,
-    progression: progressionFromScore(total, { calibrated: complete }),
-    potential: unrealizedPotential(events, records),
+    comparisonProfile: profile,
+    reference,
+    progression: reference.progression,
+    potential: unrealizedPotential(events, records, profile),
   };
 }
 export function consistency(events, today, target = 4) {
@@ -91,7 +94,7 @@ export function consistency(events, today, target = 4) {
     ranked: days.length > 0,
   };
 }
-export function dashboard(snapshots, today, target = 4) {
+export function dashboard(snapshots, today, target = 4, profile = {}) {
   const all = Object.values(snapshots).flatMap((s) => s?.events || []);
   const future = all.filter((e) => e.date > today).length;
   const events = all
@@ -114,7 +117,7 @@ export function dashboard(snapshots, today, target = 4) {
   return {
     events,
     future,
-    strength: strength(events),
+    strength: strength(events, profile),
     consistency: consistency(events, today, target),
     accessories: [...accessories.values()],
   };

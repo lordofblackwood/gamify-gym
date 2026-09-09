@@ -1526,7 +1526,7 @@ dialog.modal::backdrop {
 .profile-editor .section-heading { margin-bottom:0; }
 .profile-editor .fighter-avatar { margin:0 auto; width:80px; height:80px; }
 .profile-editor label,.profile-editor legend { font-size:13px; font-weight:500; }
-.profile-editor input,.ladder-toolbar input,.ladder-toolbar select,.preview-inputs input,.preview-inputs select { min-width:0; width:100%; background:#111b2a; border:1px solid #3b4d66; border-radius:8px; color:var(--text); padding:12px; font-size:16px; min-height:46px; }
+.profile-editor select,.profile-editor input,.ladder-toolbar input,.ladder-toolbar select,.preview-inputs input,.preview-inputs select { min-width:0; width:100%; background:#111b2a; border:1px solid #3b4d66; border-radius:8px; color:var(--text); padding:12px; font-size:16px; min-height:46px; }
 .profile-editor fieldset { border:0; padding:0; margin:0; }
 .profile-editor legend { margin-bottom:10px; }
 .avatar-options,.aura-options { display:flex; gap:10px; }
@@ -1658,3 +1658,43 @@ dialog.modal::backdrop {
 .potential-lift-values b { margin-left: 6px; color: var(--text); font-weight: 600; }
 .personal-form.unrealized { border: 1px dashed var(--violet); background: transparent; }
 .personal-form.unrealized .form-stage-state { color: var(--violet); }
+
+/* Public lifting references */
+.strength-references { margin-bottom: 24px; padding: 24px; }
+.reference-heading { align-items: flex-start; gap: 18px; }
+.reference-heading h2 { font: 600 32px/1.15 'Barlow Condensed', sans-serif; margin: 8px 0 0; }
+.reference-score { display: grid; gap: 4px; text-align: right; flex-shrink: 0; }
+.reference-score strong { color: var(--lime); font: 600 34px/1 'Barlow Condensed', sans-serif; font-variant-numeric: tabular-nums; }
+.reference-score span { font-size: 11px; color: var(--muted); }
+.reference-context { font-size: 13px; color: #d5deeb; line-height: 1.7; }
+.reference-lifts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 14px; margin-top: 20px; }
+.reference-lift { padding: 18px; border: 1px solid var(--border); border-radius: 12px; background: #0a121e; min-width: 0; }
+.reference-lift-title { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 17px; }
+.reference-lift-title h3 { font-size: 15px; margin: 0; }
+.reference-lift-title strong { white-space: nowrap; font-size: 15px; }
+.reference-lift-title strong span { font-weight: 400; font-size: 12px; color: var(--muted); }
+.source-comparison { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; font-size: 12px; }
+.source-comparison + .source-comparison { border-top: 1px solid var(--border); }
+.source-comparison small { display: block; color: var(--muted); margin-top: 4px; font-size: 11px; }
+.source-comparison b { font-size: 16px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.source-comparison.community b { color: var(--lime); }
+.source-comparison.competition b { color: #94cfff; }
+.reference-note { color: var(--muted); font-size: 12px; line-height: 1.7; margin-bottom: 18px; }
+.reference-method { border-top: 1px solid var(--border); padding-top: 8px; }
+.reference-method summary { cursor: pointer; padding: 12px 0; min-height: 44px; font-size: 13px; line-height: 1.7; }
+.reference-method p, .reference-method li { color: var(--muted); font-size: 13px; line-height: 1.8; }
+.reference-method a { color: #bce3fc; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.reference-source-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.reference-source-details h3 { font-size: 15px; margin-top: 20px; }
+.comparison-settings { display: grid; gap: 9px; }
+.comparison-settings input, .comparison-settings select { width: 100%; min-height: 48px; font-size: 16px; }
+.comparison-settings label { margin-top: 8px; }
+.comparison-settings p { line-height: 1.8; margin: 6px 0; }
+.comparison-fallback { color: #f8d375; }
+@media (max-width: 700px) {
+  .strength-references { padding: 20px; }
+  .reference-lifts, .reference-source-details { grid-template-columns: 1fr; }
+  .reference-lift { padding: 16px; }
+  .reference-lift-title { margin-bottom: 5px; }
+  .reference-heading h2 { font-size: 29px; }
+}
