@@ -1301,10 +1301,12 @@ select {
   }
   .rhythm-summary {
     position: absolute;
-    right: 28px;
-    top: 70px;
-    width: 155px;
-    padding-left: 25px;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 0;
+    width: 180px;
+    padding-left: 20px;
     border-left: 1px solid var(--border);
   }
   .rhythm-summary p {
