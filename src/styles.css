@@ -155,7 +155,6 @@ main {
   bottom: 0;
   width: 56%;
   height: 100%;
-  background-image: url("/assets/saiyan-scene.png");
   background-repeat: no-repeat;
   background-size: 475.54% 238.14%;
   background-position: 56.88% 16.33%;
@@ -1474,4 +1473,168 @@ dialog.modal::backdrop {
 .explanation p,
 .explanation ol {
   font-size: 14px;
+}
+
+/* Personal fighter dossier: identity, power and comparisons remain independent. */
+.lime { color:var(--lime); }
+.fighter-identity { display:flex; align-items:center; gap:14px; padding:18px; margin-bottom:16px; }
+.fighter-avatar { width:64px; height:64px; flex:none; }
+.fighter-avatar.small { width:46px; height:46px; }
+.fighter-name { min-width:0; flex:1; }
+.fighter-name h2 { font-size:20px; overflow-wrap:anywhere; }
+.fighter-name p { color:var(--muted); font-size:12px; margin-top:4px; }
+.profile-edit { font-size:12px; padding:10px 12px; flex:none; }
+.fighter-grid { grid-template-columns:minmax(0,1fr); }
+.power-profile { padding:22px 18px; min-width:0; }
+.power-profile-top { display:flex; gap:18px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+.power-readout { min-width:0; width:100%; }
+.power-profile .eyebrow { font-size:10px; letter-spacing:2px; line-height:1.5; }
+.fighter-power { font:700 clamp(38px,12.8vw,61px)/1.12 'Barlow Condensed',sans-serif; letter-spacing:.5px; color:var(--gold); margin:8px 0 3px; overflow-wrap:anywhere; }
+.personal-transformation { display:flex; align-items:center; gap:12px; width:100%; }
+.personal-transformation .eyebrow { color:var(--muted); font-size:9px; max-width:125px; letter-spacing:1.5px; }
+.transformation-tag { display:inline-block; border:1px solid; border-radius:8px; background:#151720; padding:9px 13px; font:600 21px/1.1 'Barlow Condensed',sans-serif; }
+.current-benchmark { border-top:1px solid var(--border); margin-top:22px; padding-top:21px; }
+.current-benchmark .eyebrow { color:var(--muted); }
+.current-benchmark h2 { font:600 25px/1.17 'Barlow Condensed',sans-serif; margin:7px 0 5px; }
+.current-benchmark p { font-size:12px; color:var(--muted); }
+.benchmark-progress { margin:17px 0; display:flex; flex-wrap:wrap; align-items:center; gap:8px 13px; }
+.benchmark-progress .meter { flex:1; min-width:100px; }
+.benchmark-progress > span { font-size:11px; color:var(--muted); }
+.benchmark-progress strong { font-size:15px; color:var(--lime); }
+.power-comparisons { display:grid; gap:8px; }
+.comparison-row { display:flex; align-items:center; gap:12px; padding:12px; min-height:64px; width:100%; border:1px solid var(--border); background:#0e1622; border-radius:10px; text-align:left; }
+.comparison-row > span:nth-child(2) { flex:1; min-width:0; }
+.comparison-row > svg { flex:none; color:var(--muted); }
+.comparison-label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+.comparison-row strong { display:block; font-size:12px; line-height:1.4; font-weight:500; }
+.comparison-symbol { width:20px; flex:none; color:var(--lime); font-size:24px; text-align:center; line-height:1; }
+.comparison-row.equal .comparison-symbol { color:var(--muted); }
+.comparison-row.next .comparison-symbol { color:var(--violet); }
+.comparison-row:disabled { opacity:.6; }
+.power-profile-footer { margin-top:18px; display:flex; gap:14px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+.power-profile-footer p { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--muted); }
+.power-profile-footer p strong { color:var(--text); }
+.primary-button.outline { border:1px solid var(--lime); background:transparent; color:var(--lime); font-size:12px; min-height:44px; width:100%; justify-content:center; }
+.next-lift-target { margin-top:13px; font-size:11px; line-height:1.6; }
+.fighter-grid .consistency-panel { min-height:140px; display:flex; flex-direction:row; padding:19px; text-align:left; }
+.fighter-grid .rank-emblem { width:88px; height:105px; }
+.fighter-grid .consistency-content { width:auto; flex:1; }
+.fighter-grid .consistency-content h2 { font-size:31px; }
+.fighter-grid .consistency-content p { font-size:12px; }
+.profile-editor { width:min(470px,calc(100% - 32px)); }
+.profile-editor form { display:grid; gap:16px; }
+.profile-editor .section-heading { margin-bottom:0; }
+.profile-editor .fighter-avatar { margin:0 auto; width:80px; height:80px; }
+.profile-editor label,.profile-editor legend { font-size:13px; font-weight:500; }
+.profile-editor input,.ladder-toolbar input,.ladder-toolbar select,.preview-inputs input,.preview-inputs select { min-width:0; width:100%; background:#111b2a; border:1px solid #3b4d66; border-radius:8px; color:var(--text); padding:12px; font-size:16px; min-height:46px; }
+.profile-editor fieldset { border:0; padding:0; margin:0; }
+.profile-editor legend { margin-bottom:10px; }
+.avatar-options,.aura-options { display:flex; gap:10px; }
+.avatar-options button,.aura-options button { background:transparent; border:1px solid var(--border); border-radius:8px; min-width:46px; min-height:46px; padding:8px; display:flex; align-items:center; justify-content:center; }
+.avatar-options button.active,.aura-options button.active { border-color:var(--lime); background:#172023; }
+.avatar-options .fighter-avatar { width:46px; height:46px; }
+.aura-options button { position:relative; }
+.aura-options span { display:block; width:24px; height:24px; border-radius:50%; }
+.aura-options svg { position:absolute; color:#080c16; }
+.journey-current { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; padding:20px; }
+.journey-current h2 { font:600 27px/1.15 'Barlow Condensed',sans-serif; margin:8px 0; }
+.journey-current p { color:var(--muted); font-size:12px; }
+.journey-current .eyebrow { font-size:10px; letter-spacing:2px; }
+.journey-current > .meter,.journey-current > p { grid-column:1/-1; }
+.journey-percent { font:700 33px/1 'Barlow Condensed',sans-serif; color:var(--lime); align-self:center; }
+.journey-percent small { font-size:18px; }
+.journey-tabs { margin:20px 0; }
+.journey-tabs button { flex:1; justify-content:center; min-height:46px; }
+.journey-intro { font-size:14px; color:var(--muted); margin-bottom:20px; }
+.ladder-toolbar { display:grid; gap:14px; }
+.ladder-toolbar label,.preview-inputs label { font-size:12px; color:var(--muted); display:grid; gap:8px; }
+.ladder-filters { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; }
+.ladder-toolbar select { font-size:13px; padding-right:6px; }
+.ladder-view-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; align-items:center; margin:14px 0; }
+.ladder-view-actions .active { color:var(--lime); }
+.ladder-view-actions .text-button { font-size:12px; min-height:44px; }
+.benchmark-list { border-top:1px solid var(--border); }
+.benchmark-row { display:grid; grid-template-columns:26px minmax(0,1fr) auto; align-items:center; gap:10px; width:100%; text-align:left; padding:18px 4px; border:0; border-bottom:1px solid var(--border); background:transparent; }
+.benchmark-row.current { background:#d7fb7909; box-shadow:inset 3px 0 var(--lime); padding-left:10px; }
+.benchmark-ordinal { color:#60758d; font:500 10px/1 Inter,sans-serif; }
+.benchmark-row-body strong { font-size:14px; display:block; margin:5px 0; line-height:1.4; }
+.benchmark-era { font-size:10px; color:var(--muted); line-height:1.4; display:block; }
+.benchmark-row-meta { font-size:10px; color:var(--muted); line-height:1.4; }
+.benchmark-row-power { text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:7px; max-width:95px; }
+.benchmark-row-power strong { font:600 17px/1.2 'Barlow Condensed',sans-serif; overflow-wrap:anywhere; }
+.benchmark-row-power > span { font-size:10px; color:var(--muted); }
+.benchmark-row-power > .current-label { color:var(--lime); }
+.load-benchmarks { display:flex; margin:24px auto; }
+.personal-form { display:flex; align-items:center; gap:13px; border-bottom:1px solid var(--border); padding:20px 3px; }
+.personal-form.current { border:1px solid #52663f; background:#d7fb7907; border-radius:10px; padding:20px 12px; }
+.personal-form h2 { font-size:16px; margin-bottom:5px; }
+.personal-form p { font-size:12px; color:var(--muted); margin-bottom:5px; }
+.personal-form > div { flex:1; }
+.form-flare { flex:none; }
+.form-stage-state { color:var(--muted); font-size:10px; flex:none; }
+.personal-form.current .form-stage-state { color:var(--lime); }
+.benchmark-detail { width:min(570px,calc(100% - 32px)); }
+.benchmark-detail h2 { font:600 32px/1.12 'Barlow Condensed',sans-serif; margin:9px 0 14px; }
+.benchmark-detail .detail-power { font:700 31px/1.2 'Barlow Condensed',sans-serif; color:var(--gold); overflow-wrap:anywhere; }
+.benchmark-detail p { color:var(--muted); font-size:13px; margin:8px 0 16px; }
+.benchmark-detail dl { margin:20px 0; }
+.benchmark-detail dl div { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; border-top:1px solid var(--border); padding:12px 0; font-size:12px; }
+.benchmark-detail dt { color:var(--muted); }
+.benchmark-detail dd { margin:0; }
+.benchmark-detail .text-link { font-size:12px; line-height:1.5; }
+.pr-preview { padding:22px; }
+.pr-preview h2 { font:600 30px/1.1 'Barlow Condensed',sans-serif; margin-bottom:12px; }
+.pr-preview > p { color:var(--muted); font-size:13px; }
+.preview-inputs { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; margin:22px 0 12px; }
+.preview-presets { flex-wrap:wrap; }
+.preview-presets button { padding:10px 13px; font-size:12px; }
+.preview-results { border-top:1px solid var(--border); margin-top:24px; padding-top:20px; }
+.preview-results p { color:var(--muted); font-size:12px; margin:8px 0; }
+.preview-results .eyebrow { margin-top:22px; font-size:10px; }
+.projected-power { display:block; color:var(--gold); font:700 46px/1.2 'Barlow Condensed',sans-serif; margin:8px 0; overflow-wrap:anywhere; }
+.preview-results h3 { margin:24px 0 8px; font-size:20px; }
+.preview-results .meter { margin-top:20px; }
+.scale-explainer { padding:16px 20px; margin:26px 0; }
+.scale-explainer summary { min-height:44px; align-content:center; font-size:14px; cursor:pointer; }
+.scale-explainer p { color:var(--muted); font-size:13px; margin:14px 0; }
+@media(min-width:650px) {
+ .fighter-identity { padding:20px 24px; gap:20px; }
+ .fighter-avatar { width:78px; height:78px; }
+ .fighter-name h2 { font-size:25px; }
+ .fighter-name p { font-size:14px; }
+ .profile-edit { font-size:14px; padding:12px 20px; }
+ .power-profile { padding:26px; }
+ .power-readout { width:auto; flex:1; }
+ .fighter-power { font-size:64px; }
+ .personal-transformation { width:auto; flex-direction:column; gap:10px; align-items:center; }
+ .personal-transformation .eyebrow { max-width:none; }
+ .current-benchmark h2 { font-size:30px; }
+ .current-benchmark p { font-size:14px; }
+ .comparison-row strong { font-size:14px; }
+ .comparison-label { font-size:12px; }
+ .comparison-row { padding:14px 16px; }
+ .power-profile-footer .outline { width:auto; }
+ .power-profile-footer p { font-size:14px; }
+ .ladder-toolbar { grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:end; }
+ .benchmark-row { grid-template-columns:40px minmax(0,1fr) 150px; padding:20px 12px; }
+ .benchmark-row-power { max-width:none; }
+ .benchmark-row-power strong { font-size:22px; }
+ .benchmark-row-meta,.benchmark-era { font-size:12px; }
+ .benchmark-row-body strong { font-size:17px; }
+ .personal-forms { display:grid; grid-template-columns:1fr 1fr; gap:0 24px; }
+}
+@media(min-width:1100px) {
+ .fighter-grid { grid-template-columns:minmax(0,1fr) 300px; align-items:start; }
+ .fighter-grid .consistency-panel { flex-direction:column; text-align:center; padding:30px 20px; gap:18px; min-height:350px; }
+ .fighter-grid .rank-emblem { width:150px; height:150px; }
+ .fighter-grid .consistency-content h2 { font-size:35px; }
+}
+@media(max-width:370px) {
+ .fighter-identity { padding:14px 12px; gap:10px; }
+ .fighter-avatar { width:49px; height:49px; }
+ .fighter-name h2 { font-size:17px; }
+ .profile-edit { font-size:11px; padding:8px; }
+ .fighter-power { font-size:43px; }
+ .benchmark-row { grid-template-columns:20px minmax(0,1fr) 76px; gap:8px; }
+ .benchmark-row-body strong { font-size:12px; }
 }

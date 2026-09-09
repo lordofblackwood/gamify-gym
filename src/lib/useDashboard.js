@@ -1,3 +1,4 @@
+import { normalizeProfile } from "./profile.mjs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   SOURCE_KEYS,
@@ -29,8 +30,7 @@ function load() {
       prefs: {
         target: [2, 3, 4, 5, 6, 7].includes(prefs.target) ? prefs.target : 4,
         unit: prefs.unit === "kg" ? "kg" : "lb",
-        selectedForm:
-          typeof prefs.selectedForm === "string" ? prefs.selectedForm : null,
+        profile: normalizeProfile(prefs.profile),
       },
       snapshots,
       sourceStatus: cache.sourceStatus || {},
@@ -39,7 +39,7 @@ function load() {
   } catch {
     return {
       code: "",
-      prefs: { target: 4, unit: "lb", selectedForm: null },
+      prefs: { target: 4, unit: "lb", profile: normalizeProfile() },
       snapshots: {},
       sourceStatus: {},
       error:

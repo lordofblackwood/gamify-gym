@@ -1,78 +1,5 @@
 import { LIFTS, shiftDate, monday } from "../../public/shared/history.mjs";
-export const FORMS = [
-  ["Base Form", 0, "Saiyan", "#b5c3d9"],
-  ["Kaioken", 300, "Kaioken", "#f1777e"],
-  ["Kaioken ×3", 375, "Kaioken", "#f1777e"],
-  ["Kaioken ×4", 450, "Kaioken", "#f1777e"],
-  ["Kaioken ×10", 525, "Kaioken", "#fb6b71"],
-  ["Super Saiyan 1", 600, "Saiyan", "#f8d375"],
-  ["Super Saiyan Grade 2", 700, "Saiyan", "#f8d375"],
-  ["Super Saiyan Grade 3", 775, "Saiyan", "#f8d375"],
-  ["Full Power Super Saiyan", 825, "Saiyan", "#f8d375"],
-  ["Super Saiyan 2", 900, "Saiyan", "#f8d375"],
-  ["Super Saiyan 3", 1050, "Saiyan", "#f8d375"],
-  ["Super Saiyan God", 1200, "Divine", "#ff828b"],
-  ["Super Saiyan Blue", 1350, "Divine", "#7cd9ff"],
-  ["Blue Kaioken ×10", 1450, "Divine", "#a5afff"],
-  ["Blue Kaioken ×20", 1550, "Divine", "#a5afff"],
-  ["Blue Evolution", 1650, "Divine", "#679aff"],
-  ["Ultra Instinct Sign", 1800, "Instinct", "#c5d1f1"],
-  ["Mastered Ultra Instinct", 1950, "Instinct", "#edf4ff"],
-  ["True Ultra Instinct", 2100, "Instinct", "#edf4ff"],
-  ["Great Ape", 300, "GT & primal", "#cfaa89"],
-  ["Golden Great Ape", 750, "GT & primal", "#f4c26c"],
-  ["Super Saiyan 4", 1050, "GT & primal", "#f67d8c"],
-  ["Full Power SSJ4", 1200, "GT & primal", "#ed5e81"],
-  ["Super Full Power Saiyan 4 Limit Breaker", 1500, "GT & primal", "#ee88cf"],
-  ["Super Saiyan 4 · DAIMA", 1300, "GT & primal", "#ff696e"],
-  ["Kaioken ×20", 700, "Kaioken", "#f65475"],
-  ["Potential Unleashed", 850, "Beyond Saiyan", "#e0e3ec"],
-  ["Ultimate Gohan", 1050, "Beyond Saiyan", "#eff3ff"],
-  ["Beast", 1850, "Beyond Saiyan", "#ddd4ff"],
-  ["Ultra Ego", 1850, "Beyond Saiyan", "#be85ef"],
-  ["Super Saiyan Rage", 1100, "Beyond Saiyan", "#a8e1fa"],
-  ["Super Saiyan Rosé", 1350, "Beyond Saiyan", "#f19dc6"],
-  ["Legendary Super Saiyan", 1150, "Beyond Saiyan", "#b7ed7a"],
-  ["Wrathful Broly", 900, "Beyond Saiyan", "#8fbd6f"],
-  ["Full Power Super Saiyan Broly", 1500, "Beyond Saiyan", "#a5ed72"],
-  ["Berserker Kale", 1150, "Beyond Saiyan", "#b9f080"],
-  ["Super Saiyan Controlled Berserk", 1300, "Beyond Saiyan", "#b9f080"],
-  ["Potential Unleashed Piccolo", 950, "Namekian", "#b5eb91"],
-  ["Orange Piccolo", 1400, "Namekian", "#ffae68"],
-  ["Giant Orange Piccolo", 1650, "Namekian", "#ffb781"],
-  ["Frieza · First Form", 300, "Rivals", "#d4b8f7"],
-  ["Frieza · Second Form", 450, "Rivals", "#d4b8f7"],
-  ["Frieza · Third Form", 525, "Rivals", "#d4b8f7"],
-  ["Frieza · Final Form", 600, "Rivals", "#dad7e5"],
-  ["Frieza · Full Power", 900, "Rivals", "#dad7e5"],
-  ["Golden Frieza", 1400, "Rivals", "#e6ca7b"],
-  ["Black Frieza", 2100, "Rivals", "#b3a8cd"],
-  ["Imperfect Cell", 600, "Rivals", "#a3d77d"],
-  ["Semi-Perfect Cell", 825, "Rivals", "#a3d77d"],
-  ["Perfect Cell", 1050, "Rivals", "#a3d77d"],
-  ["Super Perfect Cell", 1200, "Rivals", "#afd88b"],
-  ["Majin Buu", 900, "Rivals", "#efa5ce"],
-  ["Evil Buu", 1000, "Rivals", "#b7a8c8"],
-  ["Super Buu", 1150, "Rivals", "#ed93c0"],
-  ["Buutenks", 1300, "Rivals", "#ef90c8"],
-  ["Buuhan", 1450, "Rivals", "#ef90c8"],
-  ["Kid Buu", 1200, "Rivals", "#efa5ce"],
-  ["Super Vegito", 1250, "Fusion", "#e7d77f"],
-  ["Vegito Blue", 1700, "Fusion", "#82cfff"],
-  ["Super Gogeta", 1250, "Fusion", "#e7d77f"],
-  ["Gogeta Blue", 1800, "Fusion", "#82cfff"],
-  ["Gogeta Super Saiyan 4", 1750, "Fusion", "#f57b83"],
-  ["Kefla Super Saiyan", 1300, "Fusion", "#b5df7d"],
-  ["Kefla Super Saiyan 2", 1450, "Fusion", "#b5df7d"],
-  ["Gotenks Super Saiyan 3", 1150, "Fusion", "#f5d083"],
-].map(([name, threshold, family, color], i) => ({
-  id: `form-${i}`,
-  name,
-  threshold,
-  family,
-  color,
-  main: i < 19,
-}));
+import { progressionFromScore } from "./progression.mjs";
 export const RANKS = [
   ["Iron", 0, "#a6a9b8"],
   ["Bronze", 15, "#c6947b"],
@@ -98,24 +25,12 @@ export function strength(events) {
   const known = Object.values(records).filter(Boolean);
   const total = known.reduce((s, e) => s + e.weight, 0);
   const complete = known.length === 3;
-  const form = FORMS.filter((f) => f.main && f.threshold <= total).at(-1);
-  const next = FORMS.find((f) => f.main && f.threshold > total);
   return {
     records,
     total,
     complete,
     known: known.length,
-    form: complete ? form : null,
-    next: complete ? next : null,
-    unlocked: complete ? FORMS.filter((f) => f.threshold <= total) : [],
-    progress: next
-      ? Math.max(
-          0,
-          ((total - (form?.threshold ?? 0)) /
-            (next.threshold - (form?.threshold ?? 0))) *
-            100,
-        )
-      : 100,
+    progression: progressionFromScore(total, { calibrated: complete }),
   };
 }
 export function consistency(events, today, target = 4) {

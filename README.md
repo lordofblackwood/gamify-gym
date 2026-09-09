@@ -11,14 +11,19 @@ A mobile-first companion PWA for Auto Bulgarian and Accessory Lift Tracker. Host
 
 There is no recurring export/import workflow. Do not uninstall the existing trackers: their original histories are local to those installations. iOS suspends closed apps; offline changes sync on the next online tracker visit. The dashboard displays source freshness and keeps its last synced records offline. Use one installation of each tracker per connection code.
 
-## The two systems
+## Your fighter and the two progression systems
 
-- **Strength:** best recorded successful squat, bench and deadlift singles, summed in pounds. A successful single still counts if backoff work failed. Three recorded lift histories are required; starting prescriptions and state PR summaries do not substitute for history. Display can be switched to kg.
-- **Transformations:** 65 collectible forms, techniques and fusions across the main Saiyan path and alternate collections. Main path includes SSJ 1, 2, 3, God, Blue, Blue Kaioken, Blue Evolution and Ultra Instinct. All thresholds are original fitness-game milestones, not official Dragon Ball rankings or strength standards. Alternate forms can be equipped once earned.
-- **Consistency:** average weekly-target adherence over the last 12 completed Monday–Sunday weeks. Each training day counts once across both sources; failed attempts count, entirely skipped sessions do not. Weekly credit is capped at the chosen target. Current partial weeks do not lower rank. Older weeks with no records receive zero credit. Changing the target recalculates the score. Iron–Diamond have IV–I divisions and LP; Master, Grandmaster and Challenger use the displayed thresholds. There is no competitive leaderboard.
-- **Accessories:** contribute training days and have separate best-record listings; different equipment and units are never added to the barbell total.
+Your profile is your own character: choose a name, emblem and aura color. Dragon Ball fighters are comparison benchmarks, never identities to equip. Profile preferences remain local to this dashboard installation; the encrypted workout history connection is preserved when upgrading.
 
-The dashboard replaces each source snapshot on sync so source corrections, undo and resets remain authoritative. Future-dated events are excluded until their date arrives. Demo mode is explicitly labeled and never uploads illustrative records.
+- **Strength:** best recorded successful squat, bench and deadlift singles summed in pounds. Successful singles count even if backoff work fails. Three lift histories are required; an uncalibrated profile starts at Farmer with a Shotgun, power 5. Display units can change without changing scores.
+- **Power ladder:** 233 character/era/form benchmarks, from early Dragon Ball to Super and selected DAIMA milestones. Equal-power entries share a band. Current, previous, next, and nearby comparisons are calculated centrally, not duplicated in UI components.
+- **Your transformations:** 30 personal forms, from Base and Crimson Drive to Radiant Ascension, Azure Evolution, Perfected Instinct and Omni Legacy. They advance automatically from the same power estimate and never multiply it a second time. Older character-form selections are retired on upgrade.
+- **Continuous progress:** geometric interpolation between the anchors in `src/lib/progression.mjs`. Examples: 600 lb total → 18,000 power; 900 lb → 3,000,000; 1,200 lb → 900,000,000. The bar measures progress through the strength interval to the next benchmark. Each improvement raises power even if the name has not changed. The PR preview is hypothetical and never writes workout data.
+- **Evidence:** the centralized `src/data/benchmarks.mjs` dataset includes stable IDs, character, saga/era, form, display name, numeric value, tier, continuity, provenance, description and optional avatar reference. `canonicalPowerLevelKnown` indicates a stated reading or published guide value, with separate labels for those two kinds. All later invented values are marked as app estimates. Relative rankings, especially across anime/manga/DAIMA, are editorial. Zeno is explicitly a symbolic cosmic-authority endpoint, not a measured martial power. Power can keep growing past that final named milestone.
+- **Consistency:** average weekly-target adherence over the last 12 completed Monday–Sunday weeks. Each training day counts once across sources; failed attempts count, entirely skipped sessions do not. Credit is capped at the target. Current partial weeks do not lower rank; older weeks with no records receive zero. Iron–Diamond have IV–I divisions and LP, then Master, Grandmaster and Challenger. This ranking remains separate from strength.
+- **Accessories:** contribute training days and retain separate best-record listings; different equipment and units are never added to barbell strength.
+
+History corrections, undo and resets recalculate strength and power. Future-dated records are excluded until their date arrives. Demo records are explicitly labeled and never uploaded. This is a fantasy fitness-game scale, not an official Dragon Ball ranking, medical assessment or population strength percentile.
 
 ## Privacy and sync
 
@@ -38,4 +43,4 @@ Node 22 or newer. `npm install`, `npm run dev`. Run `npm run check` for scoring/
 - [Dragon Ball official transformations](https://en.dragon-ball-official.com/news/01_1328.html) and [SSJ4 DAIMA](https://en.dragon-ball-official.com/news/01_4140.html) informed naming.
 - [League ranked tiers](https://support-leagueoflegends.riotgames.com/hc/en-us/articles/4406004330643) informed rank names. The scoring here is independent.
 
-Fan-made personal training dashboard. Not affiliated with Dragon Ball or Riot Games. Generated artwork is decorative; equipped form labels and colors communicate the earned form.
+Fan-made personal training dashboard. Not affiliated with Dragon Ball or Riot Games. Profile artwork uses a personal emblem; benchmark labels never change the user’s identity.

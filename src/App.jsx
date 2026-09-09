@@ -1,22 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDashboard } from "./lib/useDashboard";
-import { dashboard, FORMS } from "./lib/scoring.mjs";
+import { dashboard } from "./lib/scoring.mjs";
 import { demoSnapshots } from "./lib/demo.mjs";
 import { Brand, Icon } from "./components/Icons";
 import {
-  StrengthPanel,
   ConsistencyPanel,
   Rhythm,
   LiftRecords,
   ActivityList,
 } from "./components/Dashboard";
-import { Forms } from "./components/Forms";
+import { Journey } from "./components/Journey";
+import { FighterProfile } from "./components/FighterProfile";
+import { PowerProfile } from "./components/PowerProfile";
+import { BenchmarkDetail } from "./components/BenchmarkDetail";
 import { Ranked } from "./components/Ranked";
 import { History } from "./components/History";
 import { Connect } from "./components/Connect";
 const nav = [
   ["home", "Home", "Overview"],
-  ["forms", "Forms", "Transformations"],
+  ["forms", "Journey", "Power journey"],
   ["rank", "Rank", "Ranked journey"],
   ["history", "History", "Training log"],
   ["sync", "Sync", "Connect data"],
@@ -30,6 +32,7 @@ export default function App() {
   const store = useDashboard();
   const [tab, setTab] = useState(validTab);
   const [demo, setDemo] = useState(false);
+  const [benchmarkId, setBenchmarkId] = useState(null);
   const [install, setInstall] = useState(null);
   const [online, setOnline] = useState(navigator.onLine);
   const [update, setUpdate] = useState(null);
@@ -66,12 +69,6 @@ export default function App() {
   const data = useMemo(
     () => dashboard(snapshots, store.today, store.prefs.target),
     [snapshots, store.today, store.prefs.target],
-  );
-  const chosen = FORMS.find(
-    (f) =>
-      f.id === store.prefs.selectedForm &&
-      data.strength.complete &&
-      f.threshold <= data.strength.total,
   );
   const hasData = data.events.length > 0;
   return (
@@ -138,8 +135,10 @@ export default function App() {
           <>
             <div className="page-heading home-heading">
               <div>
-                <h1>Every rep has a story.</h1>
-                <p>Two paths. One stronger you.</p>
+                <h1>
+                  Your power. <span className="lime">Your story.</span>
+                </h1>
+                <p>Your strength, translated into Dragon Ball.</p>
               </div>
               <button
                 className="desktop-connect secondary-button"
@@ -153,9 +152,7 @@ export default function App() {
               <div className="welcome">
                 <div>
                   <strong>Let your history do the talking.</strong>
-                  <p>
-                    Pair your two trackers once to reveal your form and rank.
-                  </p>
+                  <p>Pair your trackers once to reveal your form and rank.</p>
                 </div>
                 <div className="button-row">
                   <button
@@ -170,12 +167,16 @@ export default function App() {
                 </div>
               </div>
             ) : null}
-            <div className="hero-grid">
-              <StrengthPanel
+            <FighterProfile
+              profile={store.prefs.profile}
+              onSave={(profile) => store.preferences({ profile })}
+            />
+            <div className="hero-grid fighter-grid">
+              <PowerProfile
                 data={data.strength}
                 unit={store.prefs.unit}
-                selected={chosen}
-                onForms={() => navigate("forms")}
+                onJourney={() => navigate("forms")}
+                onInspect={setBenchmarkId}
               />
               <ConsistencyPanel
                 data={data.consistency}
@@ -222,11 +223,10 @@ export default function App() {
             </div>
           </>
         ) : tab === "forms" ? (
-          <Forms
+          <Journey
             strength={data.strength}
             unit={store.prefs.unit}
-            selected={store.prefs.selectedForm}
-            onSelect={(id) => store.preferences({ selectedForm: id })}
+            onInspect={setBenchmarkId}
           />
         ) : tab === "rank" ? (
           <Ranked
@@ -258,6 +258,14 @@ export default function App() {
           />
         )}
       </main>
+      {benchmarkId ? (
+        <BenchmarkDetail
+          id={benchmarkId}
+          progression={data.strength.progression}
+          unit={store.prefs.unit}
+          onClose={() => setBenchmarkId(null)}
+        />
+      ) : null}
       <nav className="bottom-nav" aria-label="Mobile navigation">
         {nav.map(([id, short]) => (
           <button

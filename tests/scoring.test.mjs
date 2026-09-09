@@ -10,7 +10,6 @@ import {
   dashboard,
   consistency,
   strength,
-  FORMS,
   RANKS,
 } from "../src/lib/scoring.mjs";
 import {
@@ -103,8 +102,8 @@ test("completed single with failed backoffs still counts", () => {
 test("three actual lift records required before awarding a form", () => {
   const s = strength(three.slice(0, 2));
   assert.equal(s.complete, false);
-  assert.equal(s.form, null);
-  assert.equal(s.unlocked.length, 0);
+  assert.equal(s.progression.calibrated, false);
+  assert.equal(s.progression.powerLevel, 5);
 });
 test("same-day logging across trackers earns one training day", () =>
   assert.equal(
@@ -213,18 +212,17 @@ test("replacement snapshots reflect undo and corrections", () => {
   );
   const after = dashboard({ bulgarian: snapshot(three) }, today);
   assert.equal(before.strength.total - after.strength.total, 40);
+  assert.ok(before.strength.progression.powerLevel > after.strength.progression.powerLevel);
 });
-test("main transformations and rank thresholds are strictly increasing", () => {
-  const main = FORMS.filter((f) => f.main);
-  main.slice(1).forEach((f, i) => assert.ok(f.threshold > main[i].threshold));
+test("consistency rank thresholds are strictly increasing", () => {
   RANKS.slice(1).forEach((r, i) => assert.ok(r.min > RANKS[i].min));
-  assert.equal(new Set(FORMS.map((f) => f.id)).size, FORMS.length);
 });
-test("900 lb total earns SSJ2 with correct next target", () => {
+test("900 lb total maps to recovered Namek Goku without changing identity", () => {
   const s = strength(three);
-  assert.equal(s.form.name, "Super Saiyan 2");
-  assert.equal(s.next.threshold, 1050);
-  assert.equal(s.progress, 0);
+  assert.equal(s.progression.powerLevel, 3000000);
+  assert.equal(s.progression.current.id, "goku-namek-recovered");
+  assert.equal(s.progression.transformation.name, "Crimson Drive XX");
+  assert.equal(s.progression.progress, 0);
 });
 test("connection code has 256 bits and rejects invalid input", () => {
   const code = newCode();

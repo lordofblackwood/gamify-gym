@@ -26,55 +26,6 @@ export function Meter({ value, color, label }) {
     </div>
   );
 }
-export function StrengthPanel({ data, unit, onForms, selected }) {
-  const form = selected || data.form;
-  return (
-    <button
-      className="panel strength-panel"
-      onClick={onForms}
-      aria-label="Explore strength transformations"
-    >
-      <div className="hero-art" aria-hidden="true" />
-      <div className="strength-content">
-        <span className="eyebrow">STRENGTH</span>
-        <h2 style={{ color: form?.color || "var(--gold)" }}>
-          {form?.name?.startsWith("Super Saiyan") ? (
-            <>
-              <span>Super</span>
-              <br />
-              {form.name.slice(6)}
-            </>
-          ) : (
-            form?.name || "Your next evolution"
-          )}
-        </h2>
-        <div className="power-number">
-          {data.complete ? weight(data.total, unit) : "—"}{" "}
-          <span>{data.complete ? unit : ""}</span>
-        </div>
-        <p>
-          {data.complete
-            ? "Best three-lift total"
-            : `${data.known} of 3 lift records connected`}
-        </p>
-        <div className="strength-progress">
-          <Meter
-            value={data.complete ? data.progress : 0}
-            color="var(--gold)"
-            label="Progress to next transformation"
-          />
-          <span>
-            {data.next
-              ? `${weight(data.next.threshold - data.total, unit)} ${unit} to ${data.next.name}`
-              : data.complete
-                ? "The highest main-path form is yours."
-                : "Connect your history to find your form."}
-          </span>
-        </div>
-      </div>
-    </button>
-  );
-}
 export function ConsistencyPanel({ data, onRank }) {
   return (
     <button
