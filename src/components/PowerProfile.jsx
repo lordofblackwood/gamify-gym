@@ -55,13 +55,9 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
           <div className="fighter-power" title={exactPowerLabel(p.powerLevel)}>
             {powerLabel(p.powerLevel)}
           </div>
-          <p className="small muted">
-            {p.calibrated
-              ? "Completed singles · public lifting references"
-              : "Starting power · awaiting lift records"}
-          </p>
         </div>
         <div className="personal-transformation">
+          <span className="eyebrow">FORM</span>
           <span
             className="transformation-tag"
             style={{
@@ -71,19 +67,16 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
           >
             {p.transformation.name}
           </span>
-          <span className="eyebrow">CURRENT TRANSFORMATION</span>
         </div>
       </div>
       <div className="current-benchmark">
         <span className="eyebrow">
-          {p.calibrated ? "CURRENT BENCHMARK" : "STARTING BENCHMARK"}
+          {p.calibrated ? "COMPARABLE TO" : "STARTING BENCHMARK"}
         </span>
         <h2>{p.current.displayName}</h2>
-        <p>
-          {p.calibrated
-            ? "Comparable within our progression scale."
-            : `Record all three lifts to calibrate your power (${data.known}/3 connected).`}
-        </p>
+        {!p.calibrated ? (
+          <p>{data.known}/3 singles recorded · awaiting calibration</p>
+        ) : null}
       </div>
       <div className="benchmark-progress">
         <Meter
@@ -96,44 +89,44 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
           {p.isMax ? "ladder completed" : "to next benchmark"}
         </span>
       </div>
-      <PowerComparison progression={p} onInspect={onInspect} />
-      <div className="power-profile-footer">
-        <p>
-          <Icon name="weight" size={23} />
-          <span>
-            <strong>
-              {weight(data.total, unit)} {unit}
-            </strong>{" "}
-            {data.complete ? "three-lift total" : "recorded so far"}
-          </span>
-        </p>
-        <button className="primary-button outline" onClick={onJourney}>
-          Explore the power ladder <Icon name="arrow" size={18} />
-        </button>
-      </div>
-      {p.next ? (
+      {p.next && p.calibrated ? (
         <LiftTargets
           strength={data}
           powerLevel={p.next.powerLevel}
           unit={unit}
-          title="NEXT BENCHMARK"
+          title="NEXT GOAL"
           name={p.next.displayName}
           compact
+          summaryOnly
         />
       ) : null}
-      {p.nextTransformation ? (
-        <details className="next-form-target">
-          <summary>Next transformation · {p.nextTransformation.name}</summary>
+      <details className="power-extras">
+        <summary>Comparisons & next form</summary>
+        <PowerComparison progression={p} onInspect={onInspect} />
+        {p.nextTransformation ? (
           <LiftTargets
             strength={data}
             powerLevel={p.nextTransformation.powerLevel}
             unit={unit}
-            title="TO UNLOCK THIS TRANSFORMATION"
+            title="NEXT TRANSFORMATION"
+            name={p.nextTransformation.name}
             compact
+            summaryOnly
           />
-        </details>
-      ) : null}
+        ) : null}
+      </details>
       <UnrealizedPotential strength={data} unit={unit} />
+      <div className="power-profile-footer">
+        <p>
+          <strong>
+            {weight(data.total, unit)} {unit}
+          </strong>{" "}
+          {data.complete ? "total" : "recorded"}
+        </p>
+        <button className="text-button" onClick={onJourney}>
+          Power ladder <Icon name="arrow" size={16} />
+        </button>
+      </div>
     </section>
   );
 }

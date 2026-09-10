@@ -183,9 +183,7 @@ function PersonalForms({ strength, unit, onInspect }) {
   return (
     <>
       <p className="journey-intro">
-        Dragon Ball’s transformation names, earned by your own fighter. Forms
-        and techniques from different characters share this game ladder. Your
-        profile stays yours. Tap a form to see the singles needed to unlock it.
+        Your fighter, Dragon Ball forms. Tap a form for its lifting targets.
       </p>
       <div className="personal-forms">
         {TRANSFORMATIONS.map((f) => {
@@ -205,7 +203,6 @@ function PersonalForms({ strength, unit, onInspect }) {
               </span>
               <div>
                 <h2>{f.name}</h2>
-                <p>{f.description}</p>
                 <span className="small muted">
                   PL {powerLabel(f.powerLevel, { compact: true })} ·{" "}
                   {targetSummary(
@@ -391,6 +388,7 @@ export function Journey({ strength, unit, onInspect }) {
             powerLevel={p.next.powerLevel}
             unit={unit}
             title="YOUR NEXT BENCHMARK"
+            summaryOnly
             name={p.next.displayName}
           />
         </div>

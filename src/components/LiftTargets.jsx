@@ -1,5 +1,9 @@
 import { useMemo } from "react";
-import { liftTargets, targetWeight } from "../lib/lift-targets.mjs";
+import {
+  liftTargets,
+  targetWeight,
+  shortestRoute,
+} from "../lib/lift-targets.mjs";
 
 function TargetOptions({ routes, unit, showTotals = false }) {
   return (
@@ -39,6 +43,7 @@ export function LiftTargets({
   title = "To reach this benchmark",
   name,
   compact = false,
+  summaryOnly = false,
 }) {
   const result = useMemo(
     () => liftTargets(strength, powerLevel, unit),
@@ -56,13 +61,9 @@ export function LiftTargets({
     );
   const singleInstruction =
     "Any one of these singles gets you there, with your other two bests held steady.";
-  return (
-    <section
-      className={`lift-targets ${compact ? "compact" : ""}`}
-      aria-label={title}
-    >
-      <span className="eyebrow">{title}</span>
-      {name ? <h3>{name}</h3> : null}
+  const route = shortestRoute(result);
+  const expandedTargets = (
+    <>
       {result.preferBalanced ? (
         <>
           <p className="balanced-target-total">
@@ -97,6 +98,63 @@ export function LiftTargets({
         singles and saved comparison profile. These are progression milestones,
         not prescribed attempts.
       </p>
+    </>
+  );
+  return (
+    <section
+      className={`lift-targets ${compact ? "compact" : ""}`}
+      aria-label={title}
+    >
+      <span className="eyebrow">{title}</span>
+      {name ? <h3>{name}</h3> : null}
+      {summaryOnly ? (
+        <>
+          <div className="goal-preview">
+            {result.preferBalanced ? (
+              <>
+                <strong>
+                  {targetWeight(result.balanced.totalLb, unit, {
+                    upward: true,
+                  })}{" "}
+                  {unit} total
+                </strong>
+                <p>
+                  {result.balanced.lifts
+                    .map(
+                      (lift) =>
+                        `${lift.name} ${targetWeight(lift.targetLb, unit)} ${unit}`,
+                    )
+                    .join(" · ")}
+                </p>
+                <span>Reach all three singles.</span>
+              </>
+            ) : (
+              <>
+                <div className="goal-preview-load">
+                  <strong>
+                    {route.name} {targetWeight(route.targetLb, unit)} {unit}
+                  </strong>
+                  <span>
+                    +{targetWeight(route.deltaLb, unit, { upward: true })}{" "}
+                    {unit}
+                  </span>
+                </div>
+                <p>
+                  Other lifts unchanged ·{" "}
+                  {targetWeight(route.totalLb, unit, { upward: true })} {unit}{" "}
+                  total
+                </p>
+              </>
+            )}
+          </div>
+          <details className="target-disclosure">
+            <summary>All lift targets</summary>
+            {expandedTargets}
+          </details>
+        </>
+      ) : (
+        expandedTargets
+      )}
     </section>
   );
 }

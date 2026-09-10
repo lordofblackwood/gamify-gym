@@ -191,30 +191,46 @@ export default function App() {
                 onRank={() => navigate("rank")}
               />
             </div>
-            <StrengthReferences
-              strength={data.strength}
-              unit={store.prefs.unit}
-            />
-            <Rhythm data={data.consistency} today={store.today} />
-            <div className="lower-grid">
-              <LiftRecords data={data.strength} unit={store.prefs.unit} />
-              <section className="panel recent">
-                <div className="section-heading">
-                  <h2>RECENT TRAINING</h2>
-                  <button
-                    className="text-button"
-                    onClick={() => navigate("history")}
-                  >
-                    View all <Icon name="arrow" size={15} />
-                  </button>
+            <details className="panel dashboard-disclosure">
+              <summary>
+                Training details{" "}
+                <span>Rhythm, best lifts & recent sessions</span>
+              </summary>
+              <div className="dashboard-disclosure-body">
+                <Rhythm data={data.consistency} today={store.today} />
+                <div className="lower-grid">
+                  <LiftRecords data={data.strength} unit={store.prefs.unit} />
+                  <section className="panel recent">
+                    <div className="section-heading">
+                      <h2>RECENT TRAINING</h2>
+                      <button
+                        className="text-button"
+                        onClick={() => navigate("history")}
+                      >
+                        View all <Icon name="arrow" size={15} />
+                      </button>
+                    </div>
+                    <ActivityList
+                      events={data.events}
+                      unit={store.prefs.unit}
+                      limit={4}
+                    />
+                  </section>
                 </div>
-                <ActivityList
-                  events={data.events}
+              </div>
+            </details>
+            <details className="panel dashboard-disclosure">
+              <summary>
+                Public lifting comparisons{" "}
+                <span>Fixed reference · Sep 2026</span>
+              </summary>
+              <div className="dashboard-disclosure-body">
+                <StrengthReferences
+                  strength={data.strength}
                   unit={store.prefs.unit}
-                  limit={4}
                 />
-              </section>
-            </div>
+              </div>
+            </details>
             {data.future ? (
               <p className="footnote">
                 {data.future} future-dated records are excluded until their date

@@ -1741,3 +1741,84 @@ button.personal-form .form-stage-state { max-width: 74px; overflow-wrap: anywher
   button.personal-form .form-stage-state { max-width: none; flex-basis: 100%; padding-left: 45px; }
   .personal-transformation { max-width: 46%; }
 }
+
+/* Compact overview: show the next action, reveal the detail on demand. */
+.dashboard-disclosure { margin-bottom: 12px; }
+.dashboard-disclosure > summary,
+.power-extras > summary,
+.target-disclosure > summary,
+.potential-expander > summary { display: block; position: relative; cursor: pointer; list-style: none; min-height: 44px; }
+.dashboard-disclosure > summary::-webkit-details-marker,
+.power-extras > summary::-webkit-details-marker,
+.target-disclosure > summary::-webkit-details-marker,
+.potential-expander > summary::-webkit-details-marker { display: none; }
+.dashboard-disclosure > summary::after,
+.power-extras > summary::after,
+.target-disclosure > summary::after,
+.potential-expander > summary::after { content: '+'; position: absolute; right: 0; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 21px; font-weight: 400; }
+.dashboard-disclosure[open] > summary::after,
+.power-extras[open] > summary::after,
+.target-disclosure[open] > summary::after,
+.potential-expander[open] > summary::after { content: '−'; }
+.dashboard-disclosure > summary { padding: 18px 42px 18px 18px; font-size: 14px; font-weight: 600; }
+.dashboard-disclosure > summary::after { right: 18px; }
+.dashboard-disclosure > summary > span { display: block; font-size: 11px; font-weight: 400; line-height: 1.6; color: var(--muted); margin-top: 4px; }
+.dashboard-disclosure-body { padding: 0 14px 14px; }
+.dashboard-disclosure-body .strength-references { margin: 0; }
+.dashboard-disclosure-body .rhythm { margin-top: 0; }
+.power-profile-top { gap: 10px; }
+.power-profile .personal-transformation { width: 100%; max-width: none; flex-direction: row; flex-wrap: wrap; justify-content: flex-start; align-items: center; gap: 8px; }
+.personal-transformation .eyebrow { flex: none; }
+.personal-transformation .transformation-tag { flex: 0 1 auto; max-width: 100%; min-width: 0; padding: 5px 9px; font-size: 19px; white-space: normal; overflow-wrap: normal; text-align: left; line-height: 1.35; }
+.power-profile .current-benchmark { margin-top: 16px; padding-top: 16px; }
+.power-profile .benchmark-progress { margin: 12px 0; }
+.power-profile .power-profile-footer { border-top: 1px solid var(--border); margin-top: 0; gap: 8px; }
+.power-profile-footer .text-button { min-height: 44px; font-size: 12px; }
+.power-extras { border-top: 1px solid var(--border); margin-top: 12px; }
+.power-extras > summary { padding: 13px 28px 13px 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.power-extras[open] { padding-bottom: 12px; }
+.power-profile .lift-targets { margin-top: 14px; padding-top: 14px; }
+.lift-targets > h3 { font-size: 15px; margin: 8px 0 12px; }
+.goal-preview { padding: 13px; border-radius: 9px; border: 1px solid #344937; background: #101b16; }
+.goal-preview strong { font-size: 17px; color: var(--lime); font-variant-numeric: tabular-nums; }
+.goal-preview-load { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; justify-content: space-between; }
+.goal-preview-load > span { font-size: 12px; color: #d6e8c8; }
+.goal-preview p, .goal-preview > span { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+.goal-preview > span { display: block; }
+.target-disclosure > summary { padding: 13px 28px 10px 0; color: var(--lime); font-size: 12px; line-height: 1.5; }
+.target-disclosure[open] { padding-bottom: 10px; }
+.power-profile .unrealized-potential { margin-top: 0; padding-top: 0; }
+.potential-expander > summary { padding: 13px 27px 13px 0; }
+.potential-expander > summary .potential-heading { gap: 6px; flex-wrap: wrap; }
+.potential-expander > summary .potential-heading .eyebrow { font-size: 9px; letter-spacing: .7px; }
+.potential-expander > summary .potential-status { margin-left: 0; padding: 3px 5px; font-size: 9px; }
+.potential-form-name { display: block; margin-top: 6px; font-size: 14px; line-height: 1.5; color: var(--violet); font-weight: 500; }
+.potential-expander[open] { padding-bottom: 14px; }
+.journey-current { margin-bottom: 12px; }
+.journey-targets { padding: 18px; }
+@media (max-width: 649px) {
+  main { padding-left: 16px; padding-right: 16px; padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
+  .mobile-header { padding-top: calc(env(safe-area-inset-top) + 8px); padding-bottom: 12px; }
+  .home-heading { margin-bottom: 14px; }
+  .home-heading h1 { font-size: 25px; }
+  .home-heading p { display: none; }
+  .fighter-identity { padding: 12px; gap: 10px; margin-bottom: 12px; }
+  .fighter-identity .fighter-avatar { width: 44px; height: 44px; }
+  .fighter-name h2 { font-size: 18px; }
+  .fighter-name p { font-size: 11px; }
+  .profile-edit { min-height: 44px; padding: 8px 10px; }
+  .power-profile { padding: 18px 16px 8px; }
+  .fighter-power { font-size: clamp(36px, 10.5vw, 48px); margin-top: 5px; }
+  .power-profile .current-benchmark h2 { font-size: 24px; }
+  .fighter-grid .consistency-panel { min-height: 108px; padding: 14px 16px; gap: 14px; }
+  .fighter-grid .rank-emblem { width: 62px; height: 72px; }
+  .fighter-grid .consistency-content h2 { font-size: 27px; margin: 3px 0; }
+  .fighter-grid .consistency-content > .small { display: none; }
+  .fighter-grid .consistency-content .meter { margin-top: 8px; }
+  .journey-current { padding: 16px; gap: 10px; }
+  .journey-targets { padding: 16px; }
+  .journey-current h2 { font-size: 24px; }
+  .personal-form { padding-top: 15px; padding-bottom: 15px; }
+  .dashboard-disclosure-body { padding: 0 8px 8px; }
+  .dashboard-disclosure-body .strength-references { padding: 14px; }
+}
