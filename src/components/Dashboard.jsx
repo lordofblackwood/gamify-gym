@@ -137,12 +137,12 @@ export function ActivityList({ events, unit, limit = 6 }) {
                 day: "numeric",
               })}{" "}
               ·{" "}
-              {e.source === "bulgarian" ? "Auto Bulgarian" : "Accessory Lifts"}
+              {e.source === "bulgarian" ? "Auto Bulgarian" : e.source === "bodyweight" ? `Away Strength · ${e.variant}` : "Accessory Lifts"}
             </span>
           </div>
           <div className="activity-result">
             <strong>
-              {e.weight != null
+              {e.source === "bodyweight" ? `${e.totalReps} reps` : e.weight != null
                 ? e.unit === "lb"
                   ? `${weight(e.weight, unit)} ${unit}`
                   : `${e.weight} ${e.unit}`
@@ -151,6 +151,8 @@ export function ActivityList({ events, unit, limit = 6 }) {
             <span>
               {e.outcome === "skipped"
                 ? "Skipped"
+                : e.outcome === "in-progress"
+                  ? "In progress"
                 : e.success
                   ? "Completed"
                   : e.singleCompleted

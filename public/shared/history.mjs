@@ -1,10 +1,17 @@
+import {
+  BODYWEIGHT_KEY,
+  BODYWEIGHT_EXERCISES,
+  validateBodyweightState,
+} from "./bodyweight.mjs";
 export const SOURCE_KEYS = {
   bulgarian: "auto-bulgarian:state:v2",
   accessory: "accessory-lift-tracker-v1",
+  bodyweight: BODYWEIGHT_KEY,
 };
 export const SOURCE_NAMES = {
   bulgarian: "Auto Bulgarian",
   accessory: "Accessory Lifts",
+  bodyweight: "Away Strength",
 };
 export const LIFTS = {
   backSquat: "Back Squat",
@@ -142,6 +149,32 @@ export function normalizeHistory(source, raw) {
         });
       });
     });
+  } else if (source === "bodyweight") {
+    validateBodyweightState(value);
+    for (const session of value.sessions)
+      for (const entry of session.exercises) {
+        const exercise = BODYWEIGHT_EXERCISES.find(
+          (e) => e.id === entry.exerciseId,
+        );
+        events.push({
+          id: `bodyweight:${session.id}:${entry.exerciseId}`,
+          source,
+          date: session.date,
+          exercise: entry.exerciseId,
+          name: exercise.name,
+          variant: entry.variant,
+          success: ["comfortable", "hard", "repeat"].includes(entry.outcome),
+          singleCompleted: false,
+          weight: null,
+          unit: "reps",
+          sets: entry.actualReps.length,
+          reps: null,
+          actualReps: [...entry.actualReps],
+          totalReps: entry.actualReps.reduce((sum, n) => sum + n, 0),
+          outcome: entry.outcome || "in-progress",
+          countsDay: entry.actualReps.some((n) => n > 0),
+        });
+      }
   } else throw new Error("Unknown workout tracker.");
   const unique = new Map();
   for (const e of events) {
@@ -162,7 +195,8 @@ export function normalizeHistory(source, raw) {
 }
 export function validateSnapshot(s, source) {
   check(
-    s?.schema === 1 &&
+    Object.hasOwn(SOURCE_KEYS, source) &&
+      s?.schema === 1 &&
       s.source === source &&
       Array.isArray(s.events) &&
       s.events.length <= 100000,
@@ -182,7 +216,7 @@ export function validateSnapshot(s, source) {
         typeof e.singleCompleted === "boolean" &&
         typeof e.countsDay === "boolean" &&
         (e.weight === null || finite(e.weight)) &&
-        ["lb", "kg", "sec", "level"].includes(e.unit),
+        ["lb", "kg", "sec", "level", "reps"].includes(e.unit),
       "A synced record is invalid.",
     );
     if (source === "bulgarian")
@@ -204,6 +238,33 @@ export function validateSnapshot(s, source) {
           e.repSet.reps <= 10,
         "Invalid synced rep-set evidence.",
       );
+    if (source === "bodyweight") {
+      const definition = BODYWEIGHT_EXERCISES.find((x) => x.id === e.exercise);
+      check(
+        definition &&
+          definition.variants.includes(e.variant) &&
+          e.unit === "reps" &&
+          e.weight === null &&
+          !e.singleCompleted &&
+          Array.isArray(e.actualReps) &&
+          e.actualReps.length <= 3 &&
+          e.actualReps.every((n) => Number.isInteger(n) && n >= 0 && n <= 99) &&
+          e.sets === e.actualReps.length &&
+          e.reps === null &&
+          e.totalReps === e.actualReps.reduce((sum, n) => sum + n, 0) &&
+          [
+            "comfortable",
+            "hard",
+            "repeat",
+            "short",
+            "skipped",
+            "in-progress",
+          ].includes(e.outcome) &&
+          e.countsDay === e.actualReps.some((n) => n > 0) &&
+          e.success === ["comfortable", "hard", "repeat"].includes(e.outcome),
+        "Invalid synced bodyweight record.",
+      );
+    }
     ids.add(e.id);
   }
   return s;

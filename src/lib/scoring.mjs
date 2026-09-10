@@ -101,6 +101,13 @@ export function dashboard(snapshots, today, target = 4, profile = {}) {
     .filter((e) => e.date <= today)
     .sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
   const accessories = new Map();
+  const bodyweight = new Map();
+  for (const e of events)
+    if (e.source === "bodyweight" && e.success) {
+      const key = `${e.exercise}:${e.variant}`;
+      if (!bodyweight.has(key) || e.totalReps > bodyweight.get(key).totalReps)
+        bodyweight.set(key, e);
+    }
   for (const e of [...events].reverse())
     if (e.source === "accessory" && e.success) {
       const key = `${e.exercise}:${e.unit}`;
@@ -120,5 +127,6 @@ export function dashboard(snapshots, today, target = 4, profile = {}) {
     strength: strength(events, profile),
     consistency: consistency(events, today, target),
     accessories: [...accessories.values()],
+    bodyweight: [...bodyweight.values()],
   };
 }

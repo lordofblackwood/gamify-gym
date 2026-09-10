@@ -18,7 +18,7 @@ export function Ranked({ data, prefs, onPreferences }) {
       />
       <section className="panel settings-row">
         <label htmlFor="target">
-          Weekly training target<span>Training days, across both trackers</span>
+          Weekly training target<span>Training days, across all trackers</span>
         </label>
         <select
           id="target"
@@ -78,8 +78,8 @@ export function Ranked({ data, prefs, onPreferences }) {
           so higher ranks take time to earn.
         </p>
         <p>
-          One day counts once, even when both trackers have records. Failed
-          attempts count. Entirely skipped accessory sessions do not. Extra
+          One day counts once, even when multiple trackers have records. Failed
+          attempts count. Rest days and entirely skipped sessions do not. Extra
           sessions beyond your target give no extra rank credit.
         </p>
         <p>

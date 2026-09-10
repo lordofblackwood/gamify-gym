@@ -82,7 +82,7 @@ export async function decryptSnapshot(code, envelope, source) {
     );
   } catch {
     throw new Error(
-      "History could not be unlocked. Check that all three apps use the same connection code.",
+      "History could not be unlocked. Check that all connected apps use the same connection code.",
     );
   }
 }

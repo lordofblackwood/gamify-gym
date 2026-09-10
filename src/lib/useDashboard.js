@@ -1,4 +1,4 @@
-import { normalizeProfile } from "./profile.mjs";
+import { normalizeProfile } from './profile.mjs';
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   SOURCE_KEYS,
@@ -19,7 +19,7 @@ function load() {
     const cache = JSON.parse(localStorage.getItem(CACHE) || "{}");
     const code = localStorage.getItem(PAIRING_KEY) || "";
     const snapshots = {};
-    for (const s of ["bulgarian", "accessory"])
+    for (const s of Object.keys(SOURCE_KEYS))
       if (cache.snapshots?.[s]) {
         try {
           snapshots[s] = validateSnapshot(cache.snapshots[s], s);
@@ -68,7 +68,7 @@ export function useDashboard() {
     const nextSnapshots = {};
     const nextStatus = {};
     await Promise.all(
-      ["bulgarian", "accessory"].map(async (source) => {
+      Object.keys(SOURCE_KEYS).map(async (source) => {
         try {
           if (code) {
             const result = await getHistory(code, source);
@@ -112,7 +112,7 @@ export function useDashboard() {
       setSnapshots((previous) => ({ ...previous, ...nextSnapshots }));
       setSourceStatus((previous) =>
         Object.fromEntries(
-          ["bulgarian", "accessory"].map((source) => [
+          Object.keys(SOURCE_KEYS).map((source) => [
             source,
             { ...previous[source], ...nextStatus[source] },
           ]),

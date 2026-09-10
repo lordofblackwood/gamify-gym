@@ -14,6 +14,12 @@ const sources = [
     "Accessories & completed sessions",
     "https://lordofblackwood.github.io/workout-tool/",
   ],
+  [
+    "bodyweight",
+    "Away Strength",
+    "Air squats, push-ups & glute bridges",
+    `${import.meta.env.BASE_URL}bodyweight/`,
+  ],
 ];
 export function Connect({ store, onDemo, install }) {
   const [input, setInput] = useState("");
@@ -62,7 +68,7 @@ export function Connect({ store, onDemo, install }) {
         {store.code ? (
           <>
             <p>
-              Use this same code in both workout apps on your iPhone. Keep it
+              Use this same code in each workout app on your iPhone. Keep it
               private: it unlocks your encrypted history.
             </p>
             <div className="code-row">
@@ -192,6 +198,7 @@ export function Connect({ store, onDemo, install }) {
             paste the code and tap <strong>Connect dashboard</strong>.
           </li>
           <li>Repeat in your existing Accessory Lifts home-screen app.</li>
+          <li>For bodyweight workouts, install Away Strength from its link above. In its Sync tab, paste the same code and tap <strong>Connect dashboard</strong>.</li>
         </ol>
         <p>
           Keep logging in your original apps. After each change, the open

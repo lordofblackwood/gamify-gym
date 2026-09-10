@@ -1,14 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-const base = process.env.BASE_PATH
+const parent = process.env.BASE_PATH
   ? `/${process.env.BASE_PATH.replace(/^\/+|\/+$/g, "")}/`
   : "/";
+const base = `${parent}bodyweight/`;
 export default defineConfig({
+  root: "bodyweight",
   base,
-  server: {
-    watch: { ignored: ["**/.integrations/**", "**/.sync-service/**"] },
-  },
+  build: { outDir: "../dist/bodyweight", emptyOutDir: true },
   plugins: [
     react(),
     VitePWA({
@@ -16,9 +16,9 @@ export default defineConfig({
       includeAssets: ["icon.svg", "apple-touch-icon.png"],
       manifest: {
         id: base,
-        name: "Powerlevel",
-        short_name: "Powerlevel",
-        description: "Your strength, transformed. Your consistency, ranked.",
+        name: "Away Strength",
+        short_name: "Away Strength",
+        description: "Three movements. Your own pace.",
         start_url: base,
         scope: base,
         display: "standalone",
@@ -40,11 +40,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{html,js,css,png,webp,svg,woff2}"],
-        maximumFileSizeToCacheInBytes: 5000000,
+        globPatterns: ["**/*.{html,js,css,png,svg,woff2}"],
         cleanupOutdatedCaches: true,
         navigateFallback: "index.html",
-        navigateFallbackDenylist: [/\/bodyweight(?:\/|$)/],
       },
     }),
   ],
