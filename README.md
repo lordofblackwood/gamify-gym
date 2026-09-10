@@ -7,7 +7,7 @@ A mobile-first companion PWA for Auto Bulgarian, Accessory Lift Tracker, and Awa
 1. Open Powerlevel in Safari, Share → Add to Home Screen, then open the installed dashboard.
 2. In Sync, create a connection and copy its code.
 3. Open your **existing installed** Auto Bulgarian app. Accept its update, scroll to Powerlevel dashboard sync and paste the code. Repeat inside your existing Accessory Lifts app.
-4. For bodyweight workouts, open `bodyweight/`, install Away Strength, and paste the same code in its Sync tab.
+4. For bodyweight workouts, open [Away Strength](https://lordofblackwood.github.io/away-strength/), install Away Strength, and paste the same code in its Sync tab.
 5. Continue using those apps normally. Each open tracker syncs changes automatically. The dashboard refreshes on launch, foregrounding and every minute while visible.
 
 There is no recurring export/import workflow. Do not uninstall the existing trackers: their original histories are local to those installations. iOS suspends closed apps; offline changes sync on the next online tracker visit. The dashboard displays source freshness and keeps its last synced records offline. Use one installation of each tracker per connection code.
@@ -30,7 +30,7 @@ History corrections, undo and resets recalculate strength and power. Future-date
 
 ## Away Strength bodyweight tracker
 
-Away Strength is a separate installable PWA at `bodyweight/`, with a separate manifest and service-worker scope. It tracks only air squats, push-ups, and glute bridges. Each movement and variation has independent levels: 1×10 → 2×10 → 3×10 → 1×12, continuing through 3×20. Starting reps can be reduced in Adjust. Comfortable completions can advance or repeat; hard completions repeat; stopping early reduces sets or reps without increasing total volume. This is an app progression rule, not a validated daily training protocol.
+Away Strength has its own [GitHub repository](https://github.com/lordofblackwood/away-strength) and [Pages site](https://lordofblackwood.github.io/away-strength/), with an independent build, manifest, and service-worker scope. It tracks only air squats, push-ups, and glute bridges. Each movement and variation has independent levels: 1×10 → 2×10 → 3×10 → 1×12, continuing through 3×20. Starting reps can be reduced in Adjust. Comfortable completions can advance or repeat; hard completions repeat; stopping early reduces sets or reps without increasing total volume. This is an app progression rule, not a validated daily training protocol.
 
 Actual reps save immediately, including unfinished sessions. One exercise result per local calendar date can advance its level only once. Undo restores that movement's prior level; older entries cannot overwrite later workouts. Rest and skipped days preserve progression. Daily logging does not require daily hard training; the app suggests recovery after yesterday's workout.
 

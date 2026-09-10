@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080c16" />
+    <title>Away Strength has moved</title>
+    <style>
+      :root { color-scheme: dark; font: 16px/1.6 system-ui, sans-serif; color: #f4f5fc; background: #080c16; }
+      body { margin: 0; padding: 24px; }
+      main { max-width: 520px; margin: 8vh auto; }
+      h1 { font-size: clamp(28px, 7vw, 40px); line-height: 1.15; }
+      p { color: #b5c3dc; }
+      a, button { display: inline-block; box-sizing: border-box; min-height: 48px; border: 1px solid #33445f; border-radius: 12px; padding: 12px 18px; font: inherit; cursor: pointer; text-decoration: none; }
+      a { color: #080c16; background: #d7fb79; font-weight: 650; }
+      button { color: #f4f5fc; background: #101a2b; }
+      .actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+      .brand { color: #d7fb79; font-size: 14px; text-transform: uppercase; letter-spacing: .12em; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="brand">Away Strength</div>
+      <h1>Your tracker has a new home.</h1>
+      <p>Away Strength now has its own app address. Your dashboard connection still works with the same code.</p>
+      <p>If you used this installation, export a backup before removing it. In the new app’s Sync tab, import your backup and reconnect with your existing Powerlevel code.</p>
+      <div class="actions">
+        <button id="export" type="button">Export existing backup</button>
+        <a href="https://lordofblackwood.github.io/away-strength/">Open Away Strength</a>
+      </div>
+      <p id="status" role="status">Your stored workouts have not been changed.</p>
+      <p>To install the new version on iPhone: open its address in Safari, then Share → Add to Home Screen.</p>
+    </main>
+    <script src="./move.js"></script>
+  </body>
+</html>

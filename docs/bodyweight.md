@@ -1,6 +1,6 @@
 # Away Strength
 
-A dedicated, installable companion PWA for air squats, push-ups, and glute bridges. The app lives at `/gamify-gym/bodyweight/`; Powerlevel remains the dashboard at `/gamify-gym/`.
+A dedicated, installable companion PWA for air squats, push-ups, and glute bridges. The app is maintained in [lordofblackwood/away-strength](https://github.com/lordofblackwood/away-strength) and lives at https://lordofblackwood.github.io/away-strength/. Powerlevel remains the dashboard at /gamify-gym/.
 
 ## Workout rules
 
@@ -18,7 +18,7 @@ The app supports daily logging, including rest, while suggesting recovery after 
 - A separate connection key avoids accidentally sharing browser pairing state with the dashboard. First pairing checks for different existing bodyweight history before allowing replacement. As with the existing trackers, one installation should write each source.
 - Encrypted `bodyweight` snapshots contain the actual rep arrays, outcome, exercise, variation, and date. Program configuration and notes stay local. Uploads retry while the app is open online.
 - Powerlevel reads this third source. Any actual positive reps earn one training day, deduplicated across all sources. Rest and entirely skipped work earn none. Bodyweight records never affect the recorded three-lift total. Successful best sessions are grouped by exercise and variation.
-- Separate manifest identity, start URL, scope, icons, and service worker. Powerlevel's navigation fallback excludes the bodyweight route. The build produces both PWAs without sharing their offline caches.
+- Separate manifest identity, start URL, scope, icons, and service worker. Powerlevel's navigation fallback excludes the bodyweight route. The tracker builds and deploys from its own repository. This repository retains only the dashboard integration and a migration page at the old tracker address.
 
 ## Design and verification
 
@@ -48,4 +48,6 @@ Automated checks cover the whole ladder and cap, volume-reducing resets, separat
 
 ## Release
 
-The tracker and dashboard are packaged together by the existing GitHub Pages workflow. The relay's existing private Sites repository requires its separately tested update before bodyweight uploads succeed. Publish the relay and both PWAs together after the required source-export authorization, then verify a fresh encrypted bodyweight snapshot against the live service. No personal workout history belongs in either source repository.
+Away Strength builds and publishes from its own GitHub repository. Powerlevel keeps the compatible bodyweight parser, scoring integration, and encrypted relay connection. The relay already accepts the bodyweight source.
+
+The previous /gamify-gym/bodyweight/ address serves a migration page with local backup export. Its replacement service worker affects only that previous child scope, leaves workout storage intact, and keeps the migration page available offline. Export from an old installed app before removing it; import in the new app and reconnect with the same dashboard code. Safari visits share the origin’s storage, while iPhone installations may have separate storage.

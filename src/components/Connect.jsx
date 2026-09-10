@@ -18,7 +18,7 @@ const sources = [
     "bodyweight",
     "Away Strength",
     "Air squats, push-ups & glute bridges",
-    `${import.meta.env.BASE_URL}bodyweight/`,
+    "https://lordofblackwood.github.io/away-strength/",
   ],
 ];
 export function Connect({ store, onDemo, install }) {

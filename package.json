@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "npm run build:dashboard && npm run build:bodyweight",
-    "build:dashboard": "vite build",
-    "build:bodyweight": "vite build --config vite.bodyweight.config.js",
+    "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --test tests/*.test.mjs",
     "check": "npm test && npm run build"
