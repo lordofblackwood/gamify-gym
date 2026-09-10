@@ -24,9 +24,10 @@ export function StrengthReferences({ strength, unit }) {
           <span className="eyebrow">GROUNDED IN REAL LIFTS</span>
           <h2>How you compare.</h2>
         </div>
-        <span className="reference-score">
-          <strong>{r.complete ? r.score.toFixed(2) : "—"}</strong>
-          <span>reference score</span>
+        <span className="frozen-reference">
+          Fixed reference
+          <br />
+          <strong>SEP 2026</strong>
         </span>
       </div>
       <p className="reference-context">
@@ -79,10 +80,10 @@ export function StrengthReferences({ strength, unit }) {
         <summary>Sources, sample sizes & how this becomes power</summary>
         <p>
           Each lift averages its gym and competition comparison, then squat,
-          bench and deadlift contribute equally. That average is a game
-          reference score, not a pooled percentile. Dragon Ball power is a
-          fictional translation of the score. All three successful singles are
-          required to earn power.
+          bench and deadlift contribute equally. This combines the two
+          comparisons for the game; it is not a pooled percentile. Dragon Ball
+          power is a fictional translation of the score. All three successful
+          singles are required to earn power.
         </p>
         <p>
           Community standards include estimated maximums from logged sets. Your
@@ -92,8 +93,8 @@ export function StrengthReferences({ strength, unit }) {
         <p>
           We interpolate between public landmarks. Below or above the published
           range, the labels show bounds instead of made-up percentiles. Game
-          points extend smoothly beyond those limits so improvements still
-          count. A value above 100 is a game extension, not a percentile.
+          power extends smoothly beyond those limits so improvements still
+          count. Weight targets in the far tail use that game extension.
         </p>
         <div className="reference-source-details">
           <article>
@@ -228,11 +229,10 @@ export function StrengthReferences({ strength, unit }) {
           . We keep their different populations distinct.
         </p>
         <p className="small muted">
-          Reference edition: September 2026 · downloaded {DATA.retrieved}.
-          Bundled for offline use; recalculates from your latest synced history.
-          This replaces the old fixed pound-total scale, so existing ranks may
-          change. Updating reference data in a future app release may
-          recalibrate them again.
+          Fixed reference edition: September 2026 · downloaded {DATA.retrieved}.
+          The source data and power scale are locked; no automatic updates move
+          the goalposts. Your targets recalculate as you log new singles or edit
+          your comparison profile.
         </p>
       </details>
     </section>

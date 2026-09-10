@@ -1,3 +1,5 @@
+import { liftTargets, targetSummary } from "../lib/lift-targets.mjs";
+import { LiftTargets } from "./LiftTargets";
 import { previewStrength } from "../lib/strength-comparison.mjs";
 import { useMemo, useState } from "react";
 import {
@@ -6,7 +8,6 @@ import {
   findBenchmarks,
   powerLabel,
   exactPowerLabel,
-  scoreForPower,
   benchmarkEvidence,
 } from "../lib/progression.mjs";
 import { TIERS } from "../data/benchmarks.mjs";
@@ -14,7 +15,8 @@ import { Icon } from "./Icons";
 import { Meter, weight } from "./Dashboard";
 import { comparisonName } from "./PowerProfile";
 const kg = 2.2046226218;
-function Ladder({ progression: p, unit, onInspect }) {
+function Ladder({ strength, unit, onInspect }) {
+  const p = strength.progression;
   const [query, setQuery] = useState("");
   const [tier, setTier] = useState("all");
   const [state, setState] = useState("all");
@@ -137,7 +139,10 @@ function Ladder({ progression: p, unit, onInspect }) {
                 <strong>{b.displayName}</strong>
                 <span className="benchmark-row-meta">
                   {benchmarkEvidence(b)} ·{" "}
-                  {scoreForPower(b.powerLevel).toFixed(2)} reference points
+                  {targetSummary(
+                    liftTargets(strength, b.powerLevel, unit),
+                    unit,
+                  )}
                 </span>
               </span>
               <span className="benchmark-row-power">
@@ -172,13 +177,15 @@ function Ladder({ progression: p, unit, onInspect }) {
     </>
   );
 }
-function PersonalForms({ progression: p, potential, unit }) {
+function PersonalForms({ strength, unit, onInspect }) {
+  const p = strength.progression,
+    potential = strength.potential;
   return (
     <>
       <p className="journey-intro">
-        These are your own transformations. Your current form advances
-        automatically with strength; its inspiration never replaces your
-        identity or multiplies your score again.
+        Dragon Ball’s transformation names, earned by your own fighter. Forms
+        and techniques from different characters share this game ladder. Your
+        profile stays yours. Tap a form to see the singles needed to unlock it.
       </p>
       <div className="personal-forms">
         {TRANSFORMATIONS.map((f) => {
@@ -187,7 +194,9 @@ function PersonalForms({ progression: p, potential, unit }) {
           const unrealized =
             !reached && potential.progression?.transformation.id === f.id;
           return (
-            <article
+            <button
+              type="button"
+              onClick={() => onInspect(`form:${f.id}`)}
               key={f.id}
               className={`personal-form ${current ? "current" : ""} ${reached ? "reached" : ""} ${unrealized ? "unrealized" : ""}`}
             >
@@ -196,10 +205,13 @@ function PersonalForms({ progression: p, potential, unit }) {
               </span>
               <div>
                 <h2>{f.name}</h2>
-                <p>{f.inspiration}</p>
+                <p>{f.description}</p>
                 <span className="small muted">
                   PL {powerLabel(f.powerLevel, { compact: true })} ·{" "}
-                  {scoreForPower(f.powerLevel).toFixed(2)} reference points
+                  {targetSummary(
+                    liftTargets(strength, f.powerLevel, unit),
+                    unit,
+                  )}
                 </span>
               </div>
               <span className="small form-stage-state">
@@ -211,7 +223,7 @@ function PersonalForms({ progression: p, potential, unit }) {
                       ? "Unrealized · not earned"
                       : "Ahead"}
               </span>
-            </article>
+            </button>
           );
         })}
       </div>
@@ -344,7 +356,7 @@ export function Journey({ strength, unit, onInspect }) {
         <h1>Your place in the universe.</h1>
         <p>
           {p.reached} of {BENCHMARKS.length} benchmarks reached ·{" "}
-          {TRANSFORMATIONS.length} personal transformations
+          {TRANSFORMATIONS.length} Dragon Ball forms & techniques
         </p>
       </div>
       <section className="panel journey-current">
@@ -372,6 +384,17 @@ export function Journey({ strength, unit, onInspect }) {
             : "You reached the symbolic summit. Your power can keep growing."}
         </p>
       </section>
+      {p.next ? (
+        <div className="panel journey-targets">
+          <LiftTargets
+            strength={strength}
+            powerLevel={p.next.powerLevel}
+            unit={unit}
+            title="YOUR NEXT BENCHMARK"
+            name={p.next.displayName}
+          />
+        </div>
+      ) : null}
       <div className="filter-rail journey-tabs" aria-label="Journey sections">
         {[
           ["ladder", "Power ladder"],
@@ -389,13 +412,9 @@ export function Journey({ strength, unit, onInspect }) {
         ))}
       </div>
       {section === "ladder" ? (
-        <Ladder progression={p} unit={unit} onInspect={onInspect} />
+        <Ladder strength={strength} unit={unit} onInspect={onInspect} />
       ) : section === "forms" ? (
-        <PersonalForms
-          progression={p}
-          potential={strength.potential}
-          unit={unit}
-        />
+        <PersonalForms strength={strength} onInspect={onInspect} unit={unit} />
       ) : (
         <PRPreview key={unit} strength={strength} unit={unit} />
       )}
@@ -405,17 +424,19 @@ export function Journey({ strength, unit, onInspect }) {
           Each completed squat, bench and deadlift single is compared with
           public gym-lifter and competition benchmarks. Each source gets half
           the weight; all three lifts contribute equally. This creates a
-          reference score, not a percentile of the general population. The Home
-          page shows each comparison, its source and methodology. Estimated 1RMs
-          only reveal unrealized potential; they never increase actual power or
-          unlock earned transformations. The same reference curves apply to both
-          actual and potential power.
+          comparison of lifting performance, rather than a percentile of the
+          general population. The Home page shows each comparison, its source
+          and methodology. Estimated 1RMs only reveal unrealized potential; they
+          never increase actual power or unlock earned transformations. The same
+          reference curves apply to both actual and potential power.
         </p>
         <p>
-          The bar shows your progress through the reference-score interval to
-          the next benchmark. Even a small PR moves the number. All three lifts
-          are required to calibrate; until then you start at Farmer, power 5.
-          Correcting or removing a PR recalculates your position.
+          The lifting references and power scale are fixed at their September
+          2026 edition. Targets show the weight to lift with your other two
+          singles held steady. Different routes can have different totals. Even
+          a small PR moves your power. All three lifts are required to
+          calibrate; until then you start at Farmer, power 5. Correcting or
+          removing a PR recalculates your position.
         </p>
         <p>
           Canon readings and published guide values are labeled. Other numbers

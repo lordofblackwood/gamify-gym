@@ -25,7 +25,15 @@ Below the first known landmark, game points interpolate from zero load/zero poin
 
 All three actual singles are required to calibrate earned power. Individual available lift comparisons can still be shown before then. Rep-based Epley estimates can project a separate unrealized score using the identical profile and reference curves; they cannot fill a missing actual single or unlock an earned transformation. The PR preview changes only its selected lift in memory and never writes history. Consistency remains independent.
 
-The reference edition is bundled in the PWA. No live calls to data providers, user-history uploads, subscription, or new backend are needed. History refresh still uses the existing encrypted tracker sync. Future reference editions may change scores; version, retrieval date, source hashes and provenance are retained with the data.
+The reference edition is bundled in the PWA. No live calls to data providers, user-history uploads, subscription, or new backend are needed. History refresh still uses the existing encrypted tracker sync. The September 2026 reference data and fictional power anchors are frozen at the user’s request. No automatic reference refresh is permitted. Changing this edition or its power anchors requires a new explicit user request. A regression test fingerprints both, so an accidental update fails the checks. Version, retrieval date, source hashes and provenance are retained with the data.
+
+## Lift targets instead of visible reference points
+
+The UI translates each future benchmark or transformation into actual single-lift goals. For each alternative, `src/lib/lift-targets.mjs` holds the other two recorded singles fixed, solves the same reference model for the selected lift, and rounds the result **up** to the next 2.5 lb or 1 kg. The displayed total is that target plus the two unchanged bests. All three alternatives reach the same milestone, but their total weights can differ because squat, bench and deadlift have different public distributions.
+
+The model also solves a balanced goal by increasing all three current bests proportionally until the same milestone is reached, then rounding each lift up. If that requires less additional total weight than any one-lift route, the ladder summarizes this balanced goal and the detail view prominently shows all three required singles. Otherwise, the nearest one-lift route is summarized. One-lift alternatives remain accessible for balanced goals. It does not imply that adding any weight to any lift yields that total’s rank. These are game milestones, not prescribed attempts or personalized training advice. Missing actual singles are shown as missing rather than replaced with estimates. Rep-based potential never changes a target. A new successful single or an intentional comparison-profile change recalculates the targets against the frozen edition.
+
+The tests verify every future character and transformation target in pounds and kilograms against absolute, male/bodyweight, and female/bodyweight profiles: each one-lift target reaches its milestone and the preceding increment does not; every rounded balanced set of targets also reaches its milestone. They also check that source records remain unchanged.
 
 ## Reproduce the aggregate bundle
 
@@ -46,4 +54,4 @@ python3 scripts/build-strength-data.py --inputs /path/to/public-inputs
 npm test
 ```
 
-The script writes only aggregate curves and provenance, about 20 KB. It never writes lifter names, raw meet entries, or user workout history into the app. It refuses competition groups with fewer than 200 distinct lifters. A source refresh requires deliberate review of filters, schema, sample sizes, cutoff dates, hashes and the reference version before publishing.
+The script writes only aggregate curves and provenance, about 20 KB. It never writes lifter names, raw meet entries, or user workout history into the app. It refuses competition groups with fewer than 200 distinct lifters. Do not refresh the frozen reference without a new explicit user request. If requested, review filters, schema, sample sizes, cutoff dates, hashes and the reference version before publishing, and update the reference fingerprint intentionally.

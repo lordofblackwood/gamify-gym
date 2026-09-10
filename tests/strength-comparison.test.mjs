@@ -195,11 +195,11 @@ test("an estimated transformation stays unearned, and uses the selected public r
     },
   }));
   const s = strength(events);
-  assert.equal(s.progression.transformation.name, "Divine Awakening");
-  assert.equal(s.potential.progression.transformation.name, "Azure Ascension");
+  assert.equal(s.progression.transformation.name, "Super Saiyan God");
+  assert.equal(s.potential.progression.transformation.name, "Golden Frieza");
   assert.ok(
     !s.progression.unlockedTransformations.some(
-      (f) => f.name === "Azure Ascension",
+      (f) => f.name === "Golden Frieza",
     ),
   );
   const adjusted = strength(events, male80);

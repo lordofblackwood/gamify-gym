@@ -147,22 +147,21 @@ test("incomplete lift data remains an explicit starting profile", () => {
   assert.equal(p.progress, 0);
 });
 test("personal transformations advance separately from benchmark names", () => {
-  assert.equal(
-    progressionFromScore(30).transformation.name,
-    "Crimson Drive XX",
-  );
-  assert.equal(
-    progressionFromScore(40).transformation.name,
-    "Radiant Ascension I",
-  );
-  for (const f of TRANSFORMATIONS)
+  assert.equal(progressionFromScore(30).transformation.name, "Kaioken ×20");
+  assert.equal(progressionFromScore(40).transformation.name, "Super Saiyan");
+  for (const f of TRANSFORMATIONS) {
+    assert.ok(f.description);
     assert.ok(
-      !["Goku", "Vegeta", "Frieza", "Gohan", "Piccolo", "Zeno"].some((name) =>
-        f.name.includes(name),
-      ),
+      !/Crimson Drive|Radiant|Ascension|Omni Legacy|Sovereign/.test(f.name),
     );
+  }
+  assert.ok(
+    TRANSFORMATIONS.some((f) => f.name === "Super Saiyan Blue Evolution"),
+  );
+  assert.ok(TRANSFORMATIONS.some((f) => f.name === "Beast"));
+  assert.equal(TRANSFORMATIONS.at(-1).name, "Black Frieza");
   TRANSFORMATIONS.slice(1).forEach((f, i) =>
-    assert.ok(f.powerLevel > TRANSFORMATIONS[i].powerLevel),
+    assert.ok(f.powerLevel >= TRANSFORMATIONS[i].powerLevel),
   );
 });
 test("summit has no fabricated next opponent but allows further numerical growth", () => {

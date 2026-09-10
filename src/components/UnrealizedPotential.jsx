@@ -5,10 +5,14 @@ import { powerLabel, exactPowerLabel } from "../lib/progression.mjs";
 export function UnrealizedPotential({ strength, unit }) {
   const potential = strength.potential;
   const projected = potential.progression;
-  const nextForm = projected && projected.transformation.id !== strength.progression.transformation.id;
+  const nextForm =
+    projected &&
+    projected.transformation.id !== strength.progression.transformation.id;
   return (
-    <section className={`unrealized-potential ${potential.hasPotential ? "has-potential" : ""}`}
-      aria-label="Unrealized potential">
+    <section
+      className={`unrealized-potential ${potential.hasPotential ? "has-potential" : ""}`}
+      aria-label="Unrealized potential"
+    >
       <div className="potential-heading">
         <Icon name="lock" size={22} />
         <span className="eyebrow">UNREALIZED POTENTIAL</span>
@@ -16,16 +20,26 @@ export function UnrealizedPotential({ strength, unit }) {
       </div>
       {projected ? (
         <>
-          <h3>{nextForm ? projected.transformation.name : `${projected.transformation.name} · Latent power`}</h3>
+          <h3>{projected.transformation.name}</h3>
           <p className="potential-subtitle">
-            {nextForm ? "An unrealized transformation, suggested by your rep sets." : "Hidden power within your current form. No new transformation yet."}
+            {nextForm
+              ? "An unrealized transformation, suggested by your rep sets."
+              : "Hidden power within your current form. No new transformation yet."}
           </p>
           <div className="potential-power">
-            <strong title={exactPowerLabel(projected.powerLevel)}>{powerLabel(projected.powerLevel)}</strong>
+            <strong title={exactPowerLabel(projected.powerLevel)}>
+              {powerLabel(projected.powerLevel)}
+            </strong>
             <span>potential power</span>
           </div>
-          <p className="small">{weight(potential.total, unit)} {unit} projected total · +{weight(potential.gap, unit)} {unit} beyond your proven singles</p>
-          <p className="small muted">Potential benchmark: {projected.current.displayName}. Your current power and earned form stay unchanged.</p>
+          <p className="small">
+            {weight(potential.total, unit)} {unit} projected total · +
+            {weight(potential.gap, unit)} {unit} beyond your proven singles
+          </p>
+          <p className="small muted">
+            Potential benchmark: {projected.current.displayName}. Your current
+            power and earned form stay unchanged.
+          </p>
         </>
       ) : (
         <p className="potential-empty">
@@ -43,8 +57,18 @@ export function UnrealizedPotential({ strength, unit }) {
             <div className="potential-lift" key={lift.id}>
               <strong>{lift.name}</strong>
               <div className="potential-lift-values">
-                <span>Actual <b>{weight(lift.actual, unit)} {unit}</b></span>
-                <span>Estimated <b>{weight(lift.evidence?.estimated, unit)} {unit}</b></span>
+                <span>
+                  Actual{" "}
+                  <b>
+                    {weight(lift.actual, unit)} {unit}
+                  </b>
+                </span>
+                <span>
+                  Estimated{" "}
+                  <b>
+                    {weight(lift.evidence?.estimated, unit)} {unit}
+                  </b>
+                </span>
               </div>
               <span className="small muted">
                 {lift.evidence
@@ -54,8 +78,18 @@ export function UnrealizedPotential({ strength, unit }) {
             </div>
           ))}
         </div>
-        <p className="small muted">Estimated 1RM (e1RM) uses the Epley formula: weight × (1 + reps ÷ 30), from completed Auto Bulgarian backoff sets of 2–10 reps. Reps are per set. Each lift uses the higher of its best single and estimate for potential only.</p>
-        <p className="small muted">These are historical estimates, not verified maxes or prescribed attempts. Only successful singles earn actual power. Updating and opening Auto Bulgarian online syncs completed rep-set evidence automatically.</p>
+        <p className="small muted">
+          Estimated 1RM (e1RM) uses the Epley formula: weight × (1 + reps ÷ 30),
+          from completed Auto Bulgarian backoff sets of 2–10 reps. Reps are per
+          set. Each lift uses the higher of its best single and estimate for
+          potential only.
+        </p>
+        <p className="small muted">
+          These are historical estimates, not verified maxes or prescribed
+          attempts. Only successful singles earn actual power. Updating and
+          opening Auto Bulgarian online syncs completed rep-set evidence
+          automatically.
+        </p>
       </details>
     </section>
   );

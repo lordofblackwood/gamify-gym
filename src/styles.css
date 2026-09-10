@@ -1698,3 +1698,46 @@ dialog.modal::backdrop {
   .reference-lift-title { margin-bottom: 5px; }
   .reference-heading h2 { font-size: 29px; }
 }
+
+/* Concrete lift targets from the fixed reference edition. */
+.frozen-reference { color: var(--muted); font-size: 11px; text-align: right; line-height: 1.8; flex-shrink: 0; }
+.frozen-reference strong { color: var(--lime); font-size: 12px; letter-spacing: .8px; }
+.lift-targets { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--border); }
+.lift-targets > h3 { font-size: 18px; line-height: 1.4; margin: 10px 0; }
+.lift-targets .target-instruction { color: var(--muted); font-size: 12px; line-height: 1.7; margin: 10px 0 16px; }
+.lift-target-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.lift-target-option { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 15px; border: 1px solid #344937; background: #101b16; border-radius: 10px; min-width: 0; }
+.target-lift-name { font-size: 13px; font-weight: 600; }
+.target-lift-name small { display: block; color: var(--muted); font-size: 11px; margin-top: 5px; font-weight: 400; }
+.target-load { text-align: right; }
+.target-load strong { display: block; color: var(--lime); font-size: 18px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.target-load strong small { font-size: 11px; font-weight: 400; }
+.target-load > span { color: #d6e8c8; display: block; font-size: 11px; margin-top: 4px; }
+.target-total { grid-column: 1 / -1; font-size: 11px; color: var(--muted); }
+.balanced-target-total { color: var(--muted); font-size: 12px; }
+.balanced-target-total strong { color: var(--lime); font-size: 21px; }
+.single-lift-alternatives { margin-top: 14px; }
+.single-lift-alternatives summary { cursor: pointer; min-height: 44px; padding: 13px 0; font-size: 12px; line-height: 1.5; color: #dceaba; }
+.lift-targets .target-footnote { color: var(--muted); font-size: 11px; line-height: 1.7; margin: 13px 0 0; }
+.lift-targets.compact .lift-target-options, .benchmark-detail .lift-target-options { grid-template-columns: 1fr; }
+.lift-targets.compact .target-total, .benchmark-detail .target-total { margin-top: -4px; }
+.next-form-target { border-top: 1px solid var(--border); margin-top: 18px; }
+.next-form-target summary { cursor: pointer; min-height: 44px; padding: 14px 0; line-height: 1.5; font-size: 12px; color: #dceaba; }
+.next-form-target .lift-targets { margin-top: 0; padding-top: 10px; border-top: 0; }
+.journey-targets { padding: 24px; margin-bottom: 22px; }
+.journey-targets > .lift-targets { margin-top: 0; padding-top: 0; border-top: 0; }
+button.personal-form { background: transparent; width: 100%; color: inherit; text-align: left; border: 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+button.personal-form:hover { background: #111b29; }
+button.personal-form > div { min-width: 0; flex: 1; }
+button.personal-form .form-stage-state { max-width: 74px; overflow-wrap: anywhere; }
+.personal-transformation { max-width: 44%; min-width: 0; }
+.personal-transformation .transformation-tag { white-space: normal; text-align: center; line-height: 1.5; overflow-wrap: anywhere; }
+@media (max-width: 850px) {
+  .lift-target-options { grid-template-columns: 1fr; }
+}
+@media (max-width: 420px) {
+  .journey-targets { padding: 20px; }
+  button.personal-form { flex-wrap: wrap; }
+  button.personal-form .form-stage-state { max-width: none; flex-basis: 100%; padding-left: 45px; }
+  .personal-transformation { max-width: 46%; }
+}

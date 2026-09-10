@@ -111,64 +111,70 @@ export function curveAtBodyweight(rows, bodyweightKg) {
   };
 }
 
+export function comparisonCurves(id, context) {
+  if (context.mode === "relative") {
+    const published = DATA.strengthlog.lifts[id].categories[context.category];
+    return {
+      community: curveAtBodyweight(published.rows, context.bodyweightKg),
+      communityN: published.n,
+      communityPercentiles: DATA.strengthlog.percentiles,
+      competition: curveAtBodyweight(
+        DATA.openpowerlifting.categories[context.category][id],
+        context.bodyweightKg,
+      ),
+    };
+  }
+  return {
+    community: DATA.hardy.lifts[id],
+    communityN: DATA.hardy.lifts[id].n,
+    communityPercentiles: DATA.hardy.percentiles,
+    competition: {
+      ...DATA.openpowerlifting.absolute[id],
+      sampleRange: [
+        DATA.openpowerlifting.absolute[id].n,
+        DATA.openpowerlifting.absolute[id].n,
+      ],
+    },
+  };
+}
+
+export function compareLiftPounds(weightLb, curves) {
+  const kg =
+    Number.isFinite(weightLb) && weightLb > 0 ? weightLb / LB_PER_KG : null;
+  const community =
+    kg === null
+      ? null
+      : referencePosition(kg, curves.community.kg, curves.communityPercentiles);
+  const competition =
+    kg === null
+      ? null
+      : referencePosition(
+          kg,
+          curves.competition.kg,
+          DATA.openpowerlifting.percentiles,
+          { competition: true },
+        );
+  return {
+    kg,
+    community,
+    competition,
+    score: kg === null ? null : (community.index + competition.index) / 2,
+  };
+}
+
 export function compareStrength(records, profile = {}) {
   const context = comparisonContext(profile);
   const lifts = Object.keys(LIFTS).map((id) => {
     const weightLb = records[id]?.weight;
-    const kg =
-      Number.isFinite(weightLb) && weightLb > 0 ? weightLb / LB_PER_KG : null;
-    let community, competition, communityN;
-    if (context.mode === "relative") {
-      const published = DATA.strengthlog.lifts[id].categories[context.category];
-      community = curveAtBodyweight(published.rows, context.bodyweightKg);
-      communityN = published.n;
-      competition = curveAtBodyweight(
-        DATA.openpowerlifting.categories[context.category][id],
-        context.bodyweightKg,
-      );
-    } else {
-      community = DATA.hardy.lifts[id];
-      communityN = community.n;
-      competition = {
-        ...DATA.openpowerlifting.absolute[id],
-        sampleRange: [
-          DATA.openpowerlifting.absolute[id].n,
-          DATA.openpowerlifting.absolute[id].n,
-        ],
-      };
-    }
-    const communityResult =
-      kg === null
-        ? null
-        : referencePosition(
-            kg,
-            community.kg,
-            context.mode === "relative"
-              ? DATA.strengthlog.percentiles
-              : DATA.hardy.percentiles,
-          );
-    const competitionResult =
-      kg === null
-        ? null
-        : referencePosition(
-            kg,
-            competition.kg,
-            DATA.openpowerlifting.percentiles,
-            { competition: true },
-          );
+    const curves = comparisonCurves(id, context);
+    const result = compareLiftPounds(weightLb, curves);
     return {
       id,
       name: LIFTS[id],
-      weightLb: kg === null ? null : weightLb,
-      kg,
-      community: communityResult,
-      competition: competitionResult,
-      communityN,
-      competitionSampleRange: competition.sampleRange,
-      score:
-        kg === null
-          ? null
-          : (communityResult.index + competitionResult.index) / 2,
+      weightLb: result.kg === null ? null : weightLb,
+      ...result,
+      communityN: curves.communityN,
+      competitionSampleRange: curves.competition.sampleRange,
     };
   });
   const complete = lifts.every((lift) => lift.score !== null);

@@ -273,7 +273,7 @@ export default function App() {
       {benchmarkId ? (
         <BenchmarkDetail
           id={benchmarkId}
-          progression={data.strength.progression}
+          strength={data.strength}
           unit={store.prefs.unit}
           onClose={() => setBenchmarkId(null)}
         />

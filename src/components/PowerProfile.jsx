@@ -1,5 +1,6 @@
 import { Meter, weight } from "./Dashboard";
 import { Icon } from "./Icons";
+import { LiftTargets } from "./LiftTargets";
 import { UnrealizedPotential } from "./UnrealizedPotential";
 import { powerLabel, exactPowerLabel } from "../lib/progression.mjs";
 export function comparisonName(items) {
@@ -110,11 +111,27 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
           Explore the power ladder <Icon name="arrow" size={18} />
         </button>
       </div>
-      {p.calibrated && !p.isMax ? (
-        <p className="next-lift-target small muted">
-          Reference score {p.score.toFixed(2)} · {p.scoreToNext.toFixed(2)}{" "}
-          points to the next benchmark
-        </p>
+      {p.next ? (
+        <LiftTargets
+          strength={data}
+          powerLevel={p.next.powerLevel}
+          unit={unit}
+          title="NEXT BENCHMARK"
+          name={p.next.displayName}
+          compact
+        />
+      ) : null}
+      {p.nextTransformation ? (
+        <details className="next-form-target">
+          <summary>Next transformation · {p.nextTransformation.name}</summary>
+          <LiftTargets
+            strength={data}
+            powerLevel={p.nextTransformation.powerLevel}
+            unit={unit}
+            title="TO UNLOCK THIS TRANSFORMATION"
+            compact
+          />
+        </details>
       ) : null}
       <UnrealizedPotential strength={data} unit={unit} />
     </section>
