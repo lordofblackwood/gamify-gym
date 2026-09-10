@@ -1,6 +1,6 @@
 # Public strength calibration, September 2026
 
-Powerlevel compares completed squat, bench press and deadlift singles with public lifting references. A reference score replaces the old fixed-pound-total anchors. Existing users can move to a different benchmark after this release. Their records and consistency rank do not change.
+Powerlevel compares completed squat, bench press and deadlift singles with public lifting references. A reference score is translated through a national-record-calibrated game scale. Existing users can move to a different benchmark after this release. Their records and consistency rank do not change.
 
 ## Sources and cohorts
 
@@ -19,13 +19,35 @@ StrengthLog tables and OPL centers cover M 50–140 kg and F 40–120 kg. Linear
 1. Convert each completed single from its canonical pounds to kg. Accessory records and estimated 1RM do not feed earned power.
 2. Interpolate that lift within each source's published quantile landmarks. OPL quantiles use linear interpolation at `(n - 1) × p / 100`, at P1/5/10/25/50/75/90/95/97.5/99/99.5/99.9. Display values as approximate source-specific percentiles, never as an exact ranking of all people.
 3. Average community and competition reference points equally for each lift, then average the three lifts equally. This is a **game reference score**, not a pooled percentile or a meet-total percentile. Equal source weighting is a deliberate design choice, not a statistically representative population mixture.
-4. Translate that score through `POWER_ANCHORS` in `src/lib/progression.mjs` using geometric interpolation. Score 0 gives Farmer's 5; 30 gives 3 million; 50 gives 900 million; 80 gives 30 trillion; 100 gives the symbolic Zeno milestone. Character ordering and fictional power numbers are independent of the public human-lifting evidence. Earned transformations and benchmark bands derive only from this value.
+4. Translate that score through `POWER_ANCHORS` in `src/lib/progression.mjs` using geometric interpolation. The harder version 4 anchors are stored with provenance in `src/data/power-calibration.mjs`. Score 0 gives Farmer's 5; the final form requires the reference score of the American raw record performance described below. Score 100 is no longer the summit. Character ordering and fictional power numbers are independent of the public human-lifting evidence. Earned transformations and benchmark bands derive only from this value.
+
+### American record calibration (version 4)
+
+At the user’s request, the game scale was made harder while preserving the September public comparison data. The endgame reference is **Jesus Olivares’ 1,153.5 kg (2,543.03 lb) raw total** at SBD Austin on November 22, 2025: squat 478.5 kg, bench 265 kg, deadlift 410 kg. This is the Powerlifting America men’s Open 120+ kg national raw total record, verified September 10, 2026 against [OpenPowerlifting’s meet results](https://www.openpowerlifting.org/u/jesusolivares) and the indexed [federation record listing](https://69-164-197-11.ip.linodeusercontent.com/lifters-view?id=79). It is a specific raw (no wraps) American record benchmark, not a claim that all federations, equipment divisions, or weight classes share one record.
+
+We use that meet’s three-lift proportions to calibrate the following absolute-mode game milestones:
+
+| Form or benchmark | Calibration total (lb) |
+| --- | ---: |
+| Kaioken ×20 | 1,000 |
+| Super Saiyan | 1,200 |
+| Super Saiyan 2 | 1,500 |
+| Ultimate | 1,700 |
+| Super Saiyan God | 1,900 |
+| Blue Kaioken ×10 | 2,100 |
+| Mastered Ultra Instinct | 2,350 |
+| Black Frieza (final form) | 2,543.03 |
+| Zeno (final cosmic benchmark) | 3,100 |
+
+Each stored anchor is reproducible: for calibration total `T` in pounds, assign each lift `recordLiftKg × T / 1153.5` pounds, run the unchanged absolute `compareStrength`, and retain its score. Geometric interpolation then maps these scores to the existing fictional power numbers. The remaining transformations lie between these landmarks; names, order, and fictional readings are unchanged. All nonzero power anchors require higher scores than version 3.
+
+These totals define a calibration pattern, not universal total-only unlocks. The existing source and lift weighting still determines each user’s exact targets. For example, 550/350/650 lb and 600/400/550 lb now both earn Super Saiyan 2. The 315/225/360 lb demo reaches Black Frieza at a rounded balanced 2,507.5 lb, up from 1,357.5 lb. Bodyweight-adjusted mode still uses StrengthLog and nearby competition groups; its targets are **not official weight-class American records**. Cosmic milestones deliberately require performance beyond the reference record. New records do not automatically update the saved calibration.
 
 Below the first known landmark, game points interpolate from zero load/zero points; the UI says “Below P…” rather than inventing a precise lower-tail percentile. Above the last community landmark, game points approach 100 exponentially, using the last observed segment's slope. Above the last competition landmark, game points continue with the last observed slope and can exceed 100. The UI always says “Above P…” in these unobserved tails. These extensions are explicitly game tuning and preserve continuous growth; they are not empirical percentiles. Every published curve in this edition has strictly increasing weight landmarks.
 
 All three actual singles are required to calibrate earned power. Individual available lift comparisons can still be shown before then. Rep-based Epley estimates can project a separate unrealized score using the identical profile and reference curves; they cannot fill a missing actual single or unlock an earned transformation. The PR preview changes only its selected lift in memory and never writes history. Consistency remains independent.
 
-The reference edition is bundled in the PWA. No live calls to data providers, user-history uploads, subscription, or new backend are needed. History refresh still uses the existing encrypted tracker sync. The September 2026 reference data and fictional power anchors are frozen at the user’s request. No automatic reference refresh is permitted. Changing this edition or its power anchors requires a new explicit user request. A regression test fingerprints both, so an accidental update fails the checks. Version, retrieval date, source hashes and provenance are retained with the data.
+The reference edition is bundled in the PWA. No live calls to data providers, user-history uploads, subscription, or new backend are needed. History refresh still uses the existing encrypted tracker sync. The September 2026 reference data and fictional power anchors are frozen at the user’s request. No automatic reference refresh is permitted. Changing this edition or its power anchors requires a new explicit user request. A regression test fingerprints the public data and the complete version 4 calibration, so an accidental update fails the checks. Version, retrieval date, source hashes and provenance are retained with the data.
 
 ## Lift targets instead of visible reference points
 
@@ -54,4 +76,4 @@ python3 scripts/build-strength-data.py --inputs /path/to/public-inputs
 npm test
 ```
 
-The script writes only aggregate curves and provenance, about 20 KB. It never writes lifter names, raw meet entries, or user workout history into the app. It refuses competition groups with fewer than 200 distinct lifters. Do not refresh the frozen reference without a new explicit user request. If requested, review filters, schema, sample sizes, cutoff dates, hashes and the reference version before publishing, and update the reference fingerprint intentionally.
+The script writes only aggregate curves and provenance, about 20 KB. This data-build script does not regenerate the separately frozen game calibration. It never writes lifter names, raw meet entries, or user workout history into the app. It refuses competition groups with fewer than 200 distinct lifters. Do not refresh the frozen reference without a new explicit user request. If requested, review filters, schema, sample sizes, cutoff dates, hashes and the reference version before publishing, and update the reference fingerprint intentionally.

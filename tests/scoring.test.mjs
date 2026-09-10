@@ -222,7 +222,7 @@ test("strength uses public comparisons instead of the previous fixed pound scale
   assert.equal(s.total, 900);
   assert.equal(s.reference.communitySource, "Hardy");
   assert.ok(s.reference.score > 60 && s.reference.score < 62);
-  assert.equal(s.progression.current.id, "goku-ssj3");
+  assert.equal(s.progression.current.id, "vegeta-namek-frieza");
   assert.equal(s.progression.score, s.reference.score);
 });
 test("connection code has 256 bits and rejects invalid input", () => {

@@ -147,8 +147,14 @@ test("incomplete lift data remains an explicit starting profile", () => {
   assert.equal(p.progress, 0);
 });
 test("personal transformations advance separately from benchmark names", () => {
-  assert.equal(progressionFromScore(30).transformation.name, "Kaioken ×20");
-  assert.equal(progressionFromScore(40).transformation.name, "Super Saiyan");
+  assert.equal(
+    progressionFromScore(scoreForPower(3000000)).transformation.name,
+    "Kaioken ×20",
+  );
+  assert.equal(
+    progressionFromScore(scoreForPower(150000000)).transformation.name,
+    "Super Saiyan",
+  );
   for (const f of TRANSFORMATIONS) {
     assert.ok(f.description);
     assert.ok(
@@ -165,8 +171,9 @@ test("personal transformations advance separately from benchmark names", () => {
   );
 });
 test("summit has no fabricated next opponent but allows further numerical growth", () => {
-  const p = progressionFromScore(100),
-    after = progressionFromScore(101);
+  const summit = scoreForPower(B.zeno.powerLevel);
+  const p = progressionFromScore(summit),
+    after = progressionFromScore(summit + 1);
   assert.equal(p.current.id, "zeno");
   assert.equal(p.previous.id, "grand-priest");
   assert.equal(p.next, null);

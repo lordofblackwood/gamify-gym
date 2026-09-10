@@ -183,7 +183,8 @@ function PersonalForms({ strength, unit, onInspect }) {
   return (
     <>
       <p className="journey-intro">
-        Your fighter, Dragon Ball forms. Tap a form for its lifting targets.
+        Your fighter, Dragon Ball forms. The final form is calibrated to
+        American raw record strength. Tap a form for your exact lifting targets.
       </p>
       <div className="personal-forms">
         {TRANSFORMATIONS.map((f) => {
@@ -418,6 +419,13 @@ export function Journey({ strength, unit, onInspect }) {
       )}
       <details className="panel scale-explainer">
         <summary>How your power is calculated</summary>
+        <p>
+          The hardest forms now require strength near American raw records.
+          Black Frieza is calibrated to a 1,153.5 kg (about 2,543 lb) total in
+          absolute mode; cosmic milestones go beyond it. A 1,550 lb total sits
+          around the Super Saiyan tiers. Exact goals depend on your three lifts
+          and comparison profile. See Home for the record source.
+        </p>
         <p>
           Each completed squat, bench and deadlift single is compared with
           public gym-lifter and competition benchmarks. Each source gets half

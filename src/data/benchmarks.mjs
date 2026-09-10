@@ -1,6 +1,6 @@
 // This is a curated fitness-game ladder, not an authoritative versus-battle ranking.
 // Numeric evidence is attached per entry. Entries without a numeric source are app estimates.
-export const SCALE_VERSION = 3;
+export const SCALE_VERSION = 4;
 export const SOURCES = {
   farmer: {
     title: "Official character showcase: Farmer",

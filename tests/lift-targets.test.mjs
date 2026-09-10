@@ -3,15 +3,12 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { dashboard } from "../src/lib/scoring.mjs";
 import { demoSnapshots } from "../src/lib/demo.mjs";
+import { POWER_CALIBRATION } from "../src/data/power-calibration.mjs";
 import {
   compareStrength,
   STRENGTH_REFERENCES,
 } from "../src/lib/strength-comparison.mjs";
-import {
-  POWER_ANCHORS,
-  POWER_BANDS,
-  TRANSFORMATIONS,
-} from "../src/lib/progression.mjs";
+import { POWER_BANDS, TRANSFORMATIONS } from "../src/lib/progression.mjs";
 import {
   liftTargets,
   targetSummary,
@@ -29,12 +26,15 @@ const recordRoute = (s, route, delta = 0) => ({
 test("the public reference data and power anchors stay frozen at the agreed September edition", () => {
   const hash = createHash("sha256")
     .update(
-      JSON.stringify({ data: STRENGTH_REFERENCES, anchors: POWER_ANCHORS }),
+      JSON.stringify({
+        data: STRENGTH_REFERENCES,
+        calibration: POWER_CALIBRATION,
+      }),
     )
     .digest("hex");
   assert.equal(
     hash,
-    "94f32d2e73246119da87cc28a8d9756a75d27304c86ed0efab4ee58cf341cf0b",
+    "abaec071411a6b449ec0b65d18e9d6307a85da4e7cf1d6c86963cf7ea08b4b07",
     "Changing the frozen reference needs an explicit user request",
   );
 });
@@ -44,12 +44,12 @@ test("next benchmark shows the correct pounds and route-specific totals", () => 
   assert.deepEqual(
     result.routes.map((r) => [r.id, r.targetLb, r.deltaLb, r.totalLb]),
     [
-      ["backSquat", 320, 5, 905],
+      ["backSquat", 317.5, 2.5, 902.5],
       ["benchPress", 227.5, 2.5, 902.5],
-      ["deadlift", 365, 5, 905],
+      ["deadlift", 362.5, 2.5, 902.5],
     ],
   );
-  assert.equal(targetSummary(result), "902.5 lb total via bench 227.5 lb");
+  assert.equal(targetSummary(result), "902.5 lb total via squat 317.5 lb");
 });
 test("every displayed target reaches its benchmark, and one load step below does not", () => {
   for (const profile of [
@@ -105,7 +105,7 @@ test("distant transformations offer a balanced goal instead of requiring one imp
     TRANSFORMATIONS.find((f) => f.id === "blue-evolution").powerLevel,
   );
   assert.equal(result.preferBalanced, true);
-  assert.ok(result.balanced.totalLb < 2000);
+  assert.ok(result.balanced.totalLb > 2100 && result.balanced.totalLb < 2400);
   assert.ok(
     result.balanced.deltaLb < Math.min(...result.routes.map((r) => r.deltaLb)),
   );

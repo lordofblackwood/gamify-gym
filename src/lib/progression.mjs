@@ -4,32 +4,13 @@ import {
   SCALE_VERSION,
 } from "../data/benchmarks.mjs";
 import { TRANSFORMATIONS } from "../data/transformations.mjs";
+import { POWER_CALIBRATION } from "../data/power-calibration.mjs";
 export { BENCHMARKS, BENCHMARK_BY_ID, SCALE_VERSION, TRANSFORMATIONS };
 
 // Reference score blends community and competition comparisons, equally per lift.
-// Dragon Ball power anchors remain game design, not measured human power.
-export const POWER_ANCHORS = Object.freeze(
-  [
-    [0, 5],
-    [5, 10],
-    [10, 180],
-    [15, 1500],
-    [20, 18000],
-    [25, 90000],
-    [30, 3000000],
-    [40, 150000000],
-    [50, 900000000],
-    [60, 5000000000],
-    [70, 600000000000],
-    [80, 30000000000000],
-    [85, 400000000000000],
-    [90, 4000000000000000],
-    [95, 10000000000000000],
-    [98, 1000000000000000000],
-    [99.5, 100000000000000000000],
-    [100, 10000000000000000000000],
-  ].map(([score, power]) => Object.freeze({ score, power })),
-);
+// The final form is anchored to American raw record performance. Percentile
+// landmarks stay intact; the fantasy translation now reserves room for elites.
+export const POWER_ANCHORS = POWER_CALIBRATION.anchors;
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 function finiteNonnegative(value) {
   return Number.isFinite(value) ? Math.max(0, value) : 0;

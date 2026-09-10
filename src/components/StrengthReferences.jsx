@@ -4,6 +4,7 @@ import {
   LB_PER_KG,
 } from "../lib/strength-comparison.mjs";
 import { weight } from "./Dashboard";
+import { POWER_CALIBRATION } from "../data/power-calibration.mjs";
 
 const count = (n) => n.toLocaleString("en-US");
 function sampleLabel(range) {
@@ -78,6 +79,25 @@ export function StrengthReferences({ strength, unit }) {
       </p>
       <details className="reference-method">
         <summary>Sources, sample sizes & how this becomes power</summary>
+        <p>
+          The final transformation, Black Frieza, is calibrated to Jesus
+          Olivares’ {weight(POWER_CALIBRATION.record.totalKg * LB_PER_KG, unit)}{" "}
+          {unit} American raw total record in the men’s Open 120+ kg category.
+          Cosmic benchmarks require still more strength. In absolute mode, a
+          1,550 lb total sits around the Super Saiyan tiers. Your exact targets
+          depend on your lift balance and selected comparison profile.
+        </p>
+        <p>
+          <a
+            href={POWER_CALIBRATION.record.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Record reference: SBD Austin · November 22, 2025
+          </a>
+          . Bodyweight-adjusted targets use the existing comparison tables; they
+          are not official weight-class records.
+        </p>
         <p>
           Each lift averages its gym and competition comparison, then squat,
           bench and deadlift contribute equally. This combines the two

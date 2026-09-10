@@ -175,9 +175,9 @@ test("profile cosmetics and display units cannot change comparison power", () =>
 });
 test("an estimated transformation stays unearned, and uses the selected public reference", () => {
   const events = Object.entries({
-    backSquat: 350,
+    backSquat: 400,
     benchPress: 300,
-    deadlift: 395,
+    deadlift: 450,
   }).map(([exercise, weight]) => ({
     id: exercise,
     date: "2026-09-09",
@@ -190,16 +190,16 @@ test("an estimated transformation stays unearned, and uses the selected public r
     outcome: "completed",
     countsDay: true,
     repSet: {
-      weight: exercise === "deadlift" ? 340 : weight - 50,
+      weight: exercise === "deadlift" ? 400 : weight - 50,
       reps: exercise === "deadlift" ? 10 : 5,
     },
   }));
   const s = strength(events);
-  assert.equal(s.progression.transformation.name, "Super Saiyan God");
-  assert.equal(s.potential.progression.transformation.name, "Golden Frieza");
+  assert.equal(s.progression.transformation.name, "Kaioken ×20");
+  assert.equal(s.potential.progression.transformation.name, "Super Saiyan");
   assert.ok(
     !s.progression.unlockedTransformations.some(
-      (f) => f.name === "Golden Frieza",
+      (f) => f.name === "Super Saiyan",
     ),
   );
   const adjusted = strength(events, male80);
