@@ -80,5 +80,5 @@ test("all forms require more strength than the retired scale, with record-level 
   const target = liftTargets(s, f.powerLevel);
   assert.ok(target.preferBalanced);
   assert.ok(target.balanced.totalLb >= 2500 && target.balanced.totalLb < 2600);
-  assert.ok(target.routes.every((r) => r.totalLb >= 2500));
+  assert.deepEqual(target.routes, []);
 });

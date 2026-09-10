@@ -438,11 +438,13 @@ export function Journey({ strength, unit, onInspect }) {
         </p>
         <p>
           The lifting references and power scale are fixed at their September
-          2026 edition. Targets show the weight to lift with your other two
-          singles held steady. Different routes can have different totals. Even
-          a small PR moves your power. All three lifts are required to
-          calibrate; until then you start at Farmer, power 5. Correcting or
-          removing a PR recalculates your position.
+          2026 edition. Goals balance comparable strength across squat, bench
+          and deadlift and stop at American raw record limits. Nearby one-lift
+          options hold your other singles steady; distant milestones require
+          progress across your lifts. Milestones beyond the limits have no
+          lifting target. Even a small PR moves your power. All three lifts are
+          required to calibrate; until then you start at Farmer, power 5.
+          Correcting or removing a PR recalculates your position.
         </p>
         <p>
           Canon readings and published guide values are labeled. Other numbers

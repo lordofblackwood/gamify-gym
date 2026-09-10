@@ -114,7 +114,9 @@ export function StrengthReferences({ strength, unit }) {
           We interpolate between public landmarks. Below or above the published
           range, the labels show bounds instead of made-up percentiles. Game
           power extends smoothly beyond those limits so improvements still
-          count. Weight targets in the far tail use that game extension.
+          count. Lifting goals stop at the American raw full-power record
+          limits; milestones beyond those limits stay on the fictional ladder
+          without invented lift targets.
         </p>
         <div className="reference-source-details">
           <article>

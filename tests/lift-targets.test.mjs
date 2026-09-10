@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { dashboard } from "../src/lib/scoring.mjs";
 import { demoSnapshots } from "../src/lib/demo.mjs";
 import { POWER_CALIBRATION } from "../src/data/power-calibration.mjs";
+import { LIFT_RECORD_LIMITS } from "../src/data/lift-record-limits.mjs";
 import {
   compareStrength,
   STRENGTH_REFERENCES,
@@ -13,6 +14,8 @@ import {
   liftTargets,
   targetSummary,
   targetWeight,
+  recordTargetCaps,
+  MAX_SINGLE_INCREASE,
 } from "../src/lib/lift-targets.mjs";
 
 const today = "2026-09-09";
@@ -29,12 +32,13 @@ test("the public reference data and power anchors stay frozen at the agreed Sept
       JSON.stringify({
         data: STRENGTH_REFERENCES,
         calibration: POWER_CALIBRATION,
+        limits: LIFT_RECORD_LIMITS,
       }),
     )
     .digest("hex");
   assert.equal(
     hash,
-    "abaec071411a6b449ec0b65d18e9d6307a85da4e7cf1d6c86963cf7ea08b4b07",
+    "16183b681f116edc724d8c4daa4a0227b8dfbfea8668d1935b701c9268f97afa",
     "Changing the frozen reference needs an explicit user request",
   );
 });
@@ -67,8 +71,26 @@ test("every displayed target reaches its benchmark, and one load step below does
       ].filter((p) => p > s.progression.powerLevel);
       for (const power of powerValues) {
         const result = liftTargets(s, power, unit);
+        const caps = recordTargetCaps(unit);
+        if (result.status === "beyond-records") {
+          const maximum = compareStrength(
+            Object.fromEntries(
+              Object.entries(caps).map(([id, cap]) => [
+                id,
+                {
+                  weight: Math.max(s.records[id].weight, cap.capLb),
+                },
+              ]),
+            ),
+            profile,
+          ).progression.powerLevel;
+          assert.ok(maximum < power);
+          assert.equal(result.balanced, null);
+          assert.deepEqual(result.routes, []);
+          continue;
+        }
         assert.equal(result.status, "available");
-        assert.equal(result.routes.length, 3);
+        assert.ok(result.routes.length <= 3);
         const balancedRecords = Object.fromEntries(
           result.balanced.lifts.map((lift) => [
             lift.id,
@@ -79,7 +101,11 @@ test("every displayed target reaches its benchmark, and one load step below does
           compareStrength(balancedRecords, profile).progression.powerLevel >=
             power * (1 - 1e-12),
         );
-        assert.ok(result.balanced.lifts.every((lift) => lift.deltaLb > 0));
+        assert.ok(result.balanced.lifts.some((lift) => lift.deltaLb > 0));
+        assert.ok(result.balanced.lifts.every((lift) => lift.deltaLb >= 0));
+        for (const lift of result.balanced.lifts)
+          if (lift.deltaLb > 0)
+            assert.ok(lift.targetLb <= caps[lift.id].recordLb);
         for (const route of result.routes) {
           const projected = compareStrength(
             recordRoute(s, route),
@@ -93,9 +119,106 @@ test("every displayed target reaches its benchmark, and one load step below does
           ).progression;
           assert.ok(below.powerLevel < power * (1 + 1e-12));
           assert.ok(route.deltaLb > 0);
+          assert.ok(route.targetLb <= caps[route.id].recordLb);
+          assert.ok(
+            route.deltaLb <=
+              Math.max(stepLb, route.currentLb * MAX_SINGLE_INCREASE) + 1e-9,
+          );
         }
       }
     }
+  }
+});
+test("distant goals use comparable lift strengths and never extrapolate an insane bench", () => {
+  const s = demo();
+  const p = TRANSFORMATIONS.find((f) => f.id === "super-saiyan").powerLevel;
+  const result = liftTargets(s, p);
+  assert.deepEqual(result.routes, []);
+  assert.equal(result.preferBalanced, true);
+  assert.deepEqual(
+    result.balanced.lifts.map((lift) => lift.targetLb),
+    [420, 285, 482.5],
+  );
+  const next = liftTargets(
+    s,
+    TRANSFORMATIONS.find((f) => f.id === "super-saiyan-2").powerLevel,
+  );
+  assert.deepEqual(
+    next.balanced.lifts.map((lift) => lift.targetLb),
+    [520, 345, 582.5],
+  );
+});
+test("a strong bench is retained while weaker lifts catch up instead of scaling the bench again", () => {
+  const snapshots = demoSnapshots(today);
+  for (const event of snapshots.bulgarian.events)
+    if (event.exercise === "benchPress") event.weight = 500;
+  const s = dashboard(snapshots, today).strength;
+  const power = TRANSFORMATIONS.find(
+    (f) => f.id === "super-saiyan-2",
+  ).powerLevel;
+  const result = liftTargets(s, power);
+  const bench = result.balanced.lifts.find((lift) => lift.id === "benchPress");
+  assert.equal(bench.targetLb, 500);
+  assert.equal(bench.deltaLb, 0);
+  assert.ok(
+    result.balanced.lifts
+      .filter((lift) => lift.id !== "benchPress")
+      .every((lift) => lift.deltaLb > 0),
+  );
+});
+test("record ceilings round down in both units and impossible cosmic goals have no fake loads", () => {
+  for (const unit of ["lb", "kg"]) {
+    const caps = recordTargetCaps(unit);
+    const stepLb = unit === "kg" ? 2.2046226218 : 2.5;
+    for (const cap of Object.values(caps)) {
+      assert.ok(cap.capLb <= cap.recordLb);
+      assert.ok(cap.capLb + stepLb > cap.recordLb);
+    }
+    const result = liftTargets(demo(), 1e22, unit);
+    assert.equal(result.status, "beyond-records");
+    assert.equal(targetSummary(result), "Beyond American raw record limits");
+    assert.equal(result.balanced, null);
+    assert.deepEqual(result.routes, []);
+  }
+});
+test("existing singles above a record ceiling remain proven without inventing higher goals", () => {
+  const snapshots = demoSnapshots(today);
+  for (const event of snapshots.bulgarian.events)
+    if (event.exercise === "benchPress") event.weight = 800;
+  const s = dashboard(snapshots, today).strength;
+  const before = JSON.stringify(s.records);
+  const result = liftTargets(s, TRANSFORMATIONS.at(-1).powerLevel);
+  assert.equal(result.status, "available");
+  const bench = result.balanced.lifts.find((lift) => lift.id === "benchPress");
+  assert.equal(bench.targetLb, 800);
+  assert.equal(bench.deltaLb, 0);
+  assert.ok(!result.routes.some((route) => route.id === "benchPress"));
+  assert.equal(JSON.stringify(s.records), before);
+});
+test("the last achievable goal reaches the record grid boundary without rounding past it", () => {
+  for (const unit of ["lb", "kg"]) {
+    const caps = recordTargetCaps(unit);
+    const stepLb = unit === "kg" ? 2.2046226218 : 2.5;
+    const snapshots = demoSnapshots(today);
+    for (const event of snapshots.bulgarian.events)
+      event.weight = caps[event.exercise].capLb - stepLb;
+    const s = dashboard(snapshots, today).strength;
+    const maximum = Object.fromEntries(
+      Object.entries(caps).map(([id, cap]) => [id, { weight: cap.capLb }]),
+    );
+    const power = compareStrength(maximum).progression.powerLevel;
+    const result = liftTargets(s, power, unit);
+    assert.equal(result.status, "available");
+    for (const lift of result.balanced.lifts) {
+      assert.ok(Math.abs(lift.targetLb - caps[lift.id].capLb) < 1e-8);
+      assert.ok(lift.targetLb <= caps[lift.id].recordLb);
+    }
+    const projected = Object.fromEntries(
+      result.balanced.lifts.map((lift) => [lift.id, { weight: lift.targetLb }]),
+    );
+    assert.ok(
+      compareStrength(projected).progression.powerLevel >= power * (1 - 1e-12),
+    );
   }
 });
 test("distant transformations offer a balanced goal instead of requiring one implausibly large lift", () => {

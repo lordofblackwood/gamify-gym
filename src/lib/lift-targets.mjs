@@ -3,6 +3,7 @@ import {
   compareLiftPounds,
   LB_PER_KG,
 } from "./strength-comparison.mjs";
+import { LIFT_RECORD_LIMITS } from "../data/lift-record-limits.mjs";
 import { scoreForPower } from "./progression.mjs";
 
 export const LIFT_LABELS = {
@@ -12,8 +13,39 @@ export const LIFT_LABELS = {
 };
 export const TARGET_STEPS = { lb: 2.5, kg: 1 };
 
-// Invert the frozen scoring curve for one lift, with the other singles fixed.
-// Targets are hypothetical calculations; this module cannot save workout data.
+// Only show a one-lift route for a nearby PR. This is a presentation limit,
+// not a prescribed jump or a claim that 10% is achievable in one session.
+export const MAX_SINGLE_INCREASE = 0.1;
+
+export function recordTargetCaps(unit = "lb") {
+  const factor = unit === "kg" ? LB_PER_KG : 1;
+  const step = TARGET_STEPS[unit] || TARGET_STEPS.lb;
+  return Object.fromEntries(
+    Object.entries(LIFT_RECORD_LIMITS.records).map(([id, record]) => {
+      const recordLb = record.kg * LB_PER_KG;
+      // Round the ceiling DOWN, so rounding a goal up cannot exceed the record.
+      const capLb = Math.floor(recordLb / factor / step) * step * factor;
+      return [id, { ...record, recordLb, capLb }];
+    }),
+  );
+}
+
+// Find the first usable load increment reaching a score within a finite ceiling.
+function loadForScore(scoreAt, needed, currentLb, capLb, stepLb) {
+  if (scoreAt(currentLb) >= needed) return currentLb;
+  if (currentLb >= capLb || scoreAt(capLb) < needed) return null;
+  let low = Math.floor(currentLb / stepLb) + 1;
+  let high = Math.round(capLb / stepLb);
+  while (low < high) {
+    const mid = Math.floor((low + high) / 2);
+    if (scoreAt(mid * stepLb) >= needed) high = mid;
+    else low = mid + 1;
+  }
+  return low * stepLb;
+}
+
+// Balance lift-specific reference scores, not the user's existing pound ratios.
+// Proven lifts stay intact; only new goals are bounded by the record ceilings.
 export function liftTargets(strength, powerLevel, unit = "lb") {
   if (!Number.isFinite(powerLevel) || powerLevel < 5)
     return { status: "unavailable", routes: [] };
@@ -23,40 +55,90 @@ export function liftTargets(strength, powerLevel, unit = "lb") {
   const targetScore = scoreForPower(powerLevel);
   const factor = unit === "kg" ? LB_PER_KG : 1;
   const step = TARGET_STEPS[unit] || TARGET_STEPS.lb;
-  const curvesByLift = Object.fromEntries(
-    strength.reference.lifts.map((lift) => [
-      lift.id,
-      comparisonCurves(lift.id, strength.reference.context),
-    ]),
-  );
-  const routes = strength.reference.lifts
+  const stepLb = step * factor;
+  const caps = recordTargetCaps(unit);
+  const lifts = strength.reference.lifts.map((lift) => {
+    const curves = comparisonCurves(lift.id, strength.reference.context);
+    const scoreAt = (pounds) => compareLiftPounds(pounds, curves).score;
+    const capLb = caps[lift.id].capLb;
+    return {
+      ...lift,
+      scoreAt,
+      capLb,
+      maxScore: scoreAt(Math.max(lift.weightLb, capLb)),
+    };
+  });
+  const maximumScore = lifts.reduce((sum, lift) => sum + lift.maxScore, 0) / 3;
+  if (maximumScore < targetScore)
+    return {
+      status: "beyond-records",
+      routes: [],
+      balanced: null,
+      caps,
+      unit,
+      step,
+    };
+
+  // Raise the weaker reference scores toward a shared level, preserving stronger
+  // proven singles. A lift at its record ceiling stays there while others catch up.
+  const scoreAtLevel = (level) =>
+    lifts.reduce(
+      (sum, lift) => sum + Math.max(lift.score, Math.min(lift.maxScore, level)),
+      0,
+    ) / 3;
+  let low = Math.min(...lifts.map((lift) => lift.score));
+  let high = Math.max(...lifts.map((lift) => lift.maxScore));
+  for (let i = 0; i < 60; i++) {
+    const mid = (low + high) / 2;
+    if (scoreAtLevel(mid) >= targetScore) high = mid;
+    else low = mid;
+  }
+  const goals = lifts.map((lift) => {
+    const needed = Math.max(lift.score, Math.min(lift.maxScore, high));
+    const targetLb = loadForScore(
+      lift.scoreAt,
+      needed,
+      lift.weightLb,
+      lift.capLb,
+      stepLb,
+    );
+    return {
+      id: lift.id,
+      name: LIFT_LABELS[lift.id],
+      currentLb: lift.weightLb,
+      targetLb,
+      deltaLb: targetLb - lift.weightLb,
+      capLb: lift.capLb,
+    };
+  });
+  // Reject an invalid solution; never label capped loads as reaching a higher tier.
+  if (
+    goals.some((goal) => goal.targetLb === null) ||
+    lifts.reduce((sum, lift, i) => sum + lift.scoreAt(goals[i].targetLb), 0) /
+      3 <
+      targetScore
+  )
+    return { status: "unavailable", routes: [] };
+  const totalLb = goals.reduce((sum, lift) => sum + lift.targetLb, 0);
+  const balanced = { lifts: goals, totalLb, deltaLb: totalLb - strength.total };
+  const routes = lifts
     .map((lift) => {
-      const others = strength.reference.lifts
+      const others = lifts
         .filter((other) => other.id !== lift.id)
         .reduce((sum, other) => sum + other.score, 0);
-      const needed = targetScore * 3 - others;
-      const curves = curvesByLift[lift.id];
-      const scoreAt = (pounds) => compareLiftPounds(pounds, curves).score;
-      let low = lift.weightLb,
-        high = Math.max(low + 1, low * 1.1);
-      for (let i = 0; i < 64 && scoreAt(high) < needed; i++) high *= 2;
-      if (!Number.isFinite(high) || scoreAt(high) < needed) return null;
-      for (let i = 0; i < 60; i++) {
-        const mid = (low + high) / 2;
-        if (scoreAt(mid) >= needed) high = mid;
-        else low = mid;
-      }
-      // Round upward to a displayed load that really crosses the benchmark.
-      // The correction also handles an exact grid boundary represented as x + ε.
-      let displayTarget = Math.ceil(high / factor / step) * step;
+      const targetLb = loadForScore(
+        lift.scoreAt,
+        targetScore * 3 - others,
+        lift.weightLb,
+        lift.capLb,
+        stepLb,
+      );
       if (
-        displayTarget > step &&
-        (displayTarget - step) * factor > lift.weightLb &&
-        scoreAt((displayTarget - step) * factor) >= needed
+        targetLb === null ||
+        targetLb - lift.weightLb >
+          Math.max(stepLb, lift.weightLb * MAX_SINGLE_INCREASE) + 1e-9
       )
-        displayTarget -= step;
-      while (scoreAt(displayTarget * factor) < needed) displayTarget += step;
-      const targetLb = displayTarget * factor;
+        return null;
       return {
         id: lift.id,
         name: LIFT_LABELS[lift.id],
@@ -64,59 +146,23 @@ export function liftTargets(strength, powerLevel, unit = "lb") {
         targetLb,
         deltaLb: targetLb - lift.weightLb,
         totalLb: strength.total + targetLb - lift.weightLb,
+        capLb: lift.capLb,
         unit,
         step,
         targetScore,
       };
     })
     .filter(Boolean);
-  // A distant milestone can be reached with far less total weight by improving
-  // all three lifts. Preserve the lifter's current balance, then round each up.
-  const scoreAtScale = (scale) =>
-    strength.reference.lifts.reduce(
-      (sum, lift) =>
-        sum +
-        compareLiftPounds(lift.weightLb * scale, curvesByLift[lift.id]).score,
-      0,
-    ) / 3;
-  let lowScale = 1,
-    highScale = 2;
-  for (let i = 0; i < 64 && scoreAtScale(highScale) < targetScore; i++)
-    highScale *= 2;
-  let balanced = null;
-  if (Number.isFinite(highScale) && scoreAtScale(highScale) >= targetScore) {
-    for (let i = 0; i < 60; i++) {
-      const mid = (lowScale + highScale) / 2;
-      if (scoreAtScale(mid) >= targetScore) highScale = mid;
-      else lowScale = mid;
-    }
-    const lifts = strength.reference.lifts.map((lift) => {
-      const targetLb =
-        Math.ceil((lift.weightLb * highScale) / factor / step) * step * factor;
-      return {
-        id: lift.id,
-        name: LIFT_LABELS[lift.id],
-        currentLb: lift.weightLb,
-        targetLb,
-        deltaLb: targetLb - lift.weightLb,
-      };
-    });
-    const totalLb = lifts.reduce((sum, lift) => sum + lift.targetLb, 0);
-    balanced = {
-      lifts,
-      totalLb,
-      deltaLb: totalLb - strength.total,
-      scale: highScale,
-    };
-  }
   const minSingleIncrease = Math.min(...routes.map((route) => route.deltaLb));
   return {
-    status: routes.length ? "available" : "unavailable",
+    status: "available",
     routes,
     balanced,
-    preferBalanced: Boolean(
-      balanced && balanced.deltaLb < minSingleIncrease - 1e-7,
-    ),
+    caps,
+    unit,
+    step,
+    preferBalanced:
+      !routes.length || balanced.deltaLb < minSingleIncrease - 1e-7,
   };
 }
 
@@ -135,6 +181,8 @@ export function targetWeight(pounds, unit = "lb", { upward = false } = {}) {
 
 export function targetSummary(result, unit = "lb") {
   if (result.status === "reached") return "Reached with your proven singles";
+  if (result.status === "beyond-records")
+    return "Beyond American raw record limits";
   if (result.status === "incomplete")
     return "Record all three singles to see your target";
   if (result.preferBalanced)
