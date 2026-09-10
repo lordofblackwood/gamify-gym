@@ -182,8 +182,11 @@ export function useDashboard() {
     try {
       localStorage.setItem(PREFS, JSON.stringify(value));
       setPrefs(value);
+      setError((previous) => previous === "Your settings could not be saved." ? "" : previous);
+      return true;
     } catch {
       setError("Your settings could not be saved.");
+      return false;
     }
   }
   function disconnect() {

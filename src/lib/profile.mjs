@@ -1,10 +1,4 @@
-export const AURA_COLORS = [
-  "#d7fb79",
-  "#7cd9ff",
-  "#f8d375",
-  "#c1a0ff",
-  "#ff828b",
-];
+import { normalizePhoto } from "./profile-photo.mjs";
 export const AVATAR_STYLES = ["orbit", "star", "crest"];
 export function normalizeProfile(raw = {}) {
   const name =
@@ -16,7 +10,8 @@ export function normalizeProfile(raw = {}) {
       : "";
   return {
     name: name || "Your fighter",
-    aura: AURA_COLORS.includes(raw?.aura) ? raw.aura : AURA_COLORS[0],
+    photo: normalizePhoto(raw?.photo),
+    auraMotion: raw?.auraMotion === "static" ? "static" : "auto",
     avatar: AVATAR_STYLES.includes(raw?.avatar) ? raw.avatar : "orbit",
     comparisonMode:
       raw?.comparisonMode === "relative" ? "relative" : "absolute",

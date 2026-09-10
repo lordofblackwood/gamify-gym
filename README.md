@@ -14,7 +14,9 @@ There is no recurring export/import workflow. Do not uninstall the existing trac
 
 ## Your fighter and the two progression systems
 
-Your profile is your own character: choose a name, emblem and aura color. Dragon Ball fighters are comparison benchmarks, never identities to equip. Profile preferences remain local to this dashboard installation; the encrypted workout history connection is preserved when upgrading.
+Your profile is your own character: choose a name and upload a photo or use an emblem. The aura automatically follows your current earned transformation, independently of character benchmarks, unrealized potential, and demo data. Profile preferences remain local to this dashboard installation; the encrypted workout history connection is preserved when upgrading.
+
+Profile photos accept JPG, PNG, or WebP up to 2 MB. The original image bytes and reversible zoom/position crop settings are saved in the existing device-local profile preferences; no photo is uploaded to a server. CSS/SVG energy sits behind the portrait without filtering the image. All 31 existing forms map to cosmetic presets in `src/data/auras.mjs`; unknown IDs use the subtle neutral Base preset. Reduced-motion settings automatically keep the aura still, and Edit profile also offers a saved static option. Aura selection never changes scoring or unlock rules.
 
 - **Strength:** best recorded successful squat, bench and deadlift singles compared with public gym-lifter and competition reference curves. The three-lift total remains visible, but power uses equal source and lift weights. Successful singles count even if backoff work fails. Three lift histories are required; an uncalibrated profile starts at Farmer with a Shotgun, power 5. Display units can change without changing scores.
 - **Power ladder:** 233 character/era/form benchmarks, from early Dragon Ball to Super and selected DAIMA milestones. Equal-power entries share a band. Current, previous, next, and nearby comparisons are calculated centrally, not duplicated in UI components.
@@ -64,4 +66,4 @@ Node 22 or newer. `npm install`, `npm run dev`. Run `npm run check` for scoring/
 - [Dragon Ball official transformations](https://en.dragon-ball-official.com/news/01_970.html), [Blue Evolution, Blue Kaioken and Beast](https://en.dragon-ball-official.com/news/01_2288.html), [Black Frieza](https://en.dragon-ball-official.com/news/01_1574.html), and [SSJ4 DAIMA](https://en.dragon-ball-official.com/news/01_4140.html) informed naming. Transformation thresholds are game milestones, not canonical multipliers; the character benchmark ladder continues beyond the final form.
 - [League ranked tiers](https://support-leagueoflegends.riotgames.com/hc/en-us/articles/4406004330643) informed rank names. The scoring here is independent.
 
-Fan-made personal training dashboard. Not affiliated with Dragon Ball or Riot Games. Profile artwork uses a personal emblem; benchmark labels never change the user’s identity.
+Fan-made personal training dashboard. Not affiliated with Dragon Ball or Riot Games. Profile artwork uses your photo or a personal emblem; benchmark labels never change the user’s identity.

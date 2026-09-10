@@ -207,7 +207,8 @@ test("search includes character versions, forms and eras and filters reached sta
 test("profile normalization migrates absent data without using benchmark identities", () => {
   assert.deepEqual(normalizeProfile(), {
     name: "Your fighter",
-    aura: "#d7fb79",
+    photo: null,
+    auraMotion: "auto",
     avatar: "orbit",
     comparisonMode: "absolute",
     referenceCategory: "",

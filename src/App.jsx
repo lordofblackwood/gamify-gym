@@ -77,6 +77,26 @@ export default function App() {
       ),
     [snapshots, store.today, store.prefs.target, store.prefs.profile],
   );
+  // Demo and unrealized potential never dress the saved profile in an unearned aura.
+  const earnedTransformation = useMemo(
+    () =>
+      demo
+        ? dashboard(
+            store.snapshots,
+            store.today,
+            store.prefs.target,
+            store.prefs.profile,
+          ).strength.progression.transformation
+        : data.strength.progression.transformation,
+    [
+      demo,
+      data,
+      store.snapshots,
+      store.today,
+      store.prefs.target,
+      store.prefs.profile,
+    ],
+  );
   const hasData = data.events.length > 0;
   return (
     <div className="app-shell">
@@ -176,6 +196,7 @@ export default function App() {
             ) : null}
             <FighterProfile
               profile={store.prefs.profile}
+              transformation={earnedTransformation}
               unit={store.prefs.unit}
               onSave={(profile) => store.preferences({ profile })}
             />
