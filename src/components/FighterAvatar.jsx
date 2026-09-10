@@ -1,7 +1,14 @@
 import { useId, useState } from "react";
 import { auraForTransformation } from "../data/auras.mjs";
+import { AURA_SHAPES, AURA_LIGHTNING } from "../data/aura-shapes.mjs";
 import { profileInitials } from "../lib/profile.mjs";
 import { photoFrameStyle } from "../lib/profile-photo.mjs";
+
+const LAYER_TRANSFORMS = [
+  undefined,
+  "translate(6 10) scale(.9 .92)",
+  "translate(12 19) scale(.8 .85)",
+];
 
 function Emblem({ profile }) {
   return (
@@ -74,6 +81,7 @@ export function FighterAvatar({
       className={`fighter-avatar ${small ? "small" : ""} ${aura.subtle ? "aura-subtle" : ""}`}
       data-aura={aura.id}
       data-transformation={transformation?.id || "base"}
+      data-aura-shape={aura.shape}
       data-motion={
         staticAura || profile.auraMotion === "static" ? "static" : "auto"
       }
@@ -83,11 +91,16 @@ export function FighterAvatar({
         "--aura-color": aura.color,
         "--aura-core": aura.core,
         "--aura-accent": aura.accent,
+        "--aura-width": aura.width,
+        "--aura-height": aura.height,
+        "--aura-glow": aura.glow,
+        "--aura-opacity": aura.opacity,
+        "--aura-duration": `${aura.duration}s`,
       }}
     >
       <div className="aura-glow" aria-hidden="true" />
       {!aura.subtle ? (
-        <>
+        <div className="aura-energy" aria-hidden="true">
           <div className="aura-flames" aria-hidden="true">
             <svg viewBox="0 0 120 140" fill="none">
               <defs>
@@ -116,14 +129,46 @@ export function FighterAvatar({
                     stopOpacity=".06"
                   />
                 </linearGradient>
+                <linearGradient
+                  id={`${gradient}-edge`}
+                  x1="60"
+                  y1="135"
+                  x2="60"
+                  y2="0"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="var(--aura-accent)" stopOpacity=".06" />
+                  <stop
+                    offset=".4"
+                    stopColor="var(--aura-accent)"
+                    stopOpacity=".8"
+                  />
+                  <stop
+                    offset="1"
+                    stopColor="var(--aura-accent)"
+                    stopOpacity=".1"
+                  />
+                </linearGradient>
               </defs>
-              <path
-                d="M60 132C25 135 9 111 12 91L4 69Q20 80 15 57L18 32Q24 59 32 60Q26 33 39 14Q37 44 47 48Q47 20 62 3Q56 31 71 47Q85 36 81 20Q100 44 88 66Q104 59 104 42Q114 62 104 85L117 76Q115 114 89 125Q73 135 60 132Z"
-                fill={`url(#${gradient})`}
-                stroke="var(--aura-color)"
-                strokeOpacity=".32"
-                strokeWidth="1"
-              />
+              {LAYER_TRANSFORMS.slice(0, aura.layers).map(
+                (transform, layer) => (
+                  <path
+                    key={layer}
+                    className="aura-flame-layer"
+                    d={AURA_SHAPES[aura.shape]}
+                    transform={transform}
+                    fill={`url(#${gradient}${layer === 0 && aura.layers > 1 ? "-edge" : ""})`}
+                    opacity={
+                      layer === aura.layers - 1 ? 1 : 0.48 + layer * 0.15
+                    }
+                    stroke={
+                      layer === 0 ? "var(--aura-accent)" : "var(--aura-core)"
+                    }
+                    strokeOpacity={layer === 0 ? 0.4 : 0.6}
+                    strokeWidth={layer === 0 ? 1 : 1.3}
+                  />
+                ),
+              )}
               <path
                 d="M33 115Q13 96 24 71Q19 95 34 102M88 113Q109 95 97 72Q101 94 86 101M38 52Q34 38 40 28M76 51Q85 48 86 38"
                 stroke="var(--aura-core)"
@@ -134,11 +179,11 @@ export function FighterAvatar({
             </svg>
           </div>
           <div className="aura-particles" aria-hidden="true">
-            {[0, 1, 2, 3].map((i) => (
+            {Array.from({ length: aura.particles }, (_, i) => (
               <i key={i} style={{ "--particle": i }} />
             ))}
           </div>
-          {aura.lightning ? (
+          {aura.lightning !== "none" ? (
             <div className="aura-lightning" aria-hidden="true">
               <svg
                 viewBox="0 0 120 140"
@@ -148,11 +193,13 @@ export function FighterAvatar({
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="m22 42-7 22 9-3-8 22 10 12M98 47l8 18-10 5 11 21-10 17" />
+                {AURA_LIGHTNING[aura.lightning].map((path, i) => (
+                  <path key={i} d={path} />
+                ))}
               </svg>
             </div>
           ) : null}
-        </>
+        </div>
       ) : null}
       <div className={`fighter-portrait ${photo ? "has-photo" : ""}`}>
         {photo ? (

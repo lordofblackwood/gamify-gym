@@ -17,6 +17,7 @@ import {
   MAX_PHOTO_BYTES,
 } from "../src/lib/profile-photo.mjs";
 import { normalizeProfile } from "../src/lib/profile.mjs";
+import { AURA_SHAPES, AURA_LIGHTNING } from "../src/data/aura-shapes.mjs";
 import { dashboard } from "../src/lib/scoring.mjs";
 import { demoSnapshots } from "../src/lib/demo.mjs";
 
@@ -32,12 +33,92 @@ test("every existing transformation has an explicit valid cosmetic preset", () =
     TRANSFORMATIONS.map((f) => f.id).sort(),
   );
   for (const form of TRANSFORMATIONS)
-    assert.equal(
-      auraForTransformation(form),
-      AURA_PRESETS[TRANSFORMATION_AURAS[form.id]],
-    );
+    assert.equal(auraForTransformation(form), TRANSFORMATION_AURAS[form.id]);
   for (const form of [null, {}, { id: "new-form" }, { id: "toString" }])
     assert.equal(auraForTransformation(form), AURA_PRESETS.base);
+});
+
+test("every form has a distinct static treatment beyond its color or animation", () => {
+  const signatures = TRANSFORMATIONS.map((form) => {
+    const {
+      shape,
+      width,
+      height,
+      layers,
+      glow,
+      particles,
+      lightning,
+      opacity,
+    } = auraForTransformation(form);
+    return JSON.stringify({
+      shape,
+      width,
+      height,
+      layers,
+      glow,
+      particles,
+      lightning,
+      opacity,
+    });
+  });
+  assert.equal(new Set(signatures).size, TRANSFORMATIONS.length);
+});
+
+test("Kaioken multipliers steadily expand and intensify the earned aura", () => {
+  const forms = [
+    "kaioken",
+    "kaioken-2",
+    "kaioken-3",
+    "kaioken-4",
+    "kaioken-10",
+    "kaioken-20",
+  ].map((id) => auraForTransformation({ id }));
+  for (let i = 1; i < forms.length; i++) {
+    assert.equal(forms[i].id, "kaioken");
+    for (const property of ["width", "height", "glow", "particles", "opacity"])
+      assert.ok(
+        forms[i][property] > forms[i - 1][property],
+        `${property} grows at step ${i}`,
+      );
+    assert.ok(forms[i].layers >= forms[i - 1].layers);
+  }
+});
+
+test("golden stages change silhouette and SSJ3 adds taller layered energy and distinct bolts", () => {
+  const ids = [
+    "super-saiyan",
+    "super-saiyan-grade2",
+    "super-saiyan-grade3",
+    "super-saiyan-full-power",
+    "super-saiyan-2",
+    "super-saiyan-3",
+  ];
+  const forms = ids.map((id) => auraForTransformation({ id }));
+  assert.equal(new Set(forms.map((form) => form.shape)).size, ids.length);
+  assert.equal(forms[3].lightning, "none");
+  assert.notEqual(forms[4].lightning, forms[5].lightning);
+  assert.ok(forms[5].height > forms[4].height);
+  assert.ok(forms[5].layers > forms[4].layers);
+});
+
+test("every aura stays within the mobile compositing budget", () => {
+  for (const form of TRANSFORMATIONS) {
+    const aura = auraForTransformation(form);
+    assert.ok(Object.hasOwn(AURA_SHAPES, aura.shape));
+    assert.ok(Object.hasOwn(AURA_LIGHTNING, aura.lightning));
+    assert.ok(aura.width >= 0.8 && aura.width <= 1.1);
+    assert.ok(aura.height >= 0.8 && aura.height <= 1.14);
+    assert.ok(
+      Number.isInteger(aura.layers) && aura.layers >= 1 && aura.layers <= 3,
+    );
+    assert.ok(
+      Number.isInteger(aura.particles) &&
+        aura.particles >= 0 &&
+        aura.particles <= 8,
+    );
+    assert.ok(AURA_LIGHTNING[aura.lightning].length <= 4);
+    assert.ok(aura.duration >= 4);
+  }
 });
 
 test("aura changes at earned transformation boundaries, independently of benchmarks", () => {
