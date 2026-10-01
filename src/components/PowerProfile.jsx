@@ -1,4 +1,4 @@
-import { Meter, weight } from "./Dashboard";
+import { LiftRecords, Meter, weight } from "./Dashboard";
 import { Icon } from "./Icons";
 import { LiftTargets } from "./LiftTargets";
 import { UnrealizedPotential } from "./UnrealizedPotential";
@@ -51,13 +51,13 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
     >
       <div className="power-profile-top">
         <div className="power-readout">
-          <span className="eyebrow">PROVEN POWER LEVEL</span>
+          <span className="eyebrow">Power level</span>
           <div className="fighter-power" title={exactPowerLabel(p.powerLevel)}>
             {powerLabel(p.powerLevel)}
           </div>
         </div>
         <div className="personal-transformation">
-          <span className="eyebrow">FORM</span>
+          <span className="eyebrow">Form</span>
           <span
             className="transformation-tag"
             style={{
@@ -69,9 +69,10 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
           </span>
         </div>
       </div>
+      <LiftRecords data={data} unit={unit} />
       <div className="current-benchmark">
         <span className="eyebrow">
-          {p.calibrated ? "COMPARABLE TO" : "STARTING BENCHMARK"}
+          {p.calibrated ? "Comparable to" : "Starting benchmark"}
         </span>
         <h2>{p.current.displayName}</h2>
         {!p.calibrated ? (
@@ -94,7 +95,7 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
           strength={data}
           powerLevel={p.next.powerLevel}
           unit={unit}
-          title="NEXT GOAL"
+          title="Next goal"
           name={p.next.displayName}
           compact
           summaryOnly
@@ -108,7 +109,7 @@ export function PowerProfile({ data, unit, onJourney, onInspect }) {
             strength={data}
             powerLevel={p.nextTransformation.powerLevel}
             unit={unit}
-            title="NEXT TRANSFORMATION"
+            title="Next transformation"
             name={p.nextTransformation.name}
             compact
             summaryOnly

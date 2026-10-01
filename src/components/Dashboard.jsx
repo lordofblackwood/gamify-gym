@@ -26,16 +26,16 @@ export function Meter({ value, color, label }) {
     </div>
   );
 }
-export function ConsistencyPanel({ data, onRank }) {
-  return (
+export function ConsistencyPanel({ data, today, onRank }) {
+  const rank = (
     <button
-      className="panel consistency-panel"
+      className={`${today ? "" : "panel "}consistency-panel`}
       onClick={onRank}
       aria-label="Explore consistency rank"
     >
       <RankEmblem color={data.ranked ? data.rank.color : "#66768e"} />
       <div className="consistency-content">
-        <span className="eyebrow">CONSISTENCY</span>
+        <span className="eyebrow">Consistency rank</span>
         <h2 style={{ color: data.ranked ? data.rank.color : "var(--muted)" }}>
           {data.ranked ? `${data.rank.name} ${data.division}` : "Unranked"}
         </h2>
@@ -48,9 +48,22 @@ export function ConsistencyPanel({ data, onRank }) {
           color={data.rank.color}
           label="Progress to next rank"
         />
-        <span className="small muted">Training builds your rank.</span>
+        <span className="small muted rank-link">
+          View rank details <Icon name="arrow" size={13} />
+        </span>
       </div>
     </button>
+  );
+  return today ? (
+    <section
+      className="panel consistency-with-calendar"
+      aria-label="Consistency rank and calendar"
+    >
+      {rank}
+      <Rhythm data={data} today={today} />
+    </section>
+  ) : (
+    rank
   );
 }
 export function Rhythm({ data, today }) {
@@ -59,10 +72,21 @@ export function Rhythm({ data, today }) {
     Array.from({ length: 7 }, (_, j) => shiftDate(start, i * 7 + j)),
   );
   return (
-    <section className="panel rhythm">
+    <section className="rhythm" aria-labelledby="consistency-calendar-title">
       <div className="section-heading">
-        <h2>TRAINING RHYTHM</h2>
+        <h2 id="consistency-calendar-title">Consistency calendar</h2>
         <span className="small muted">Last 12 weeks</span>
+      </div>
+      <div className="heat-months" aria-hidden="true">
+        {columns.map((week, i) => (
+          <span key={week[0]} style={{ gridColumn: i + 2 }}>
+            {i === 0 || week[0].slice(0, 7) !== columns[i - 1][0].slice(0, 7)
+              ? new Date(`${week[0]}T12:00:00`).toLocaleDateString(undefined, {
+                  month: "short",
+                })
+              : ""}
+          </span>
+        ))}
       </div>
       <div className="heatmap">
         <div className="day-labels">
@@ -73,8 +97,9 @@ export function Rhythm({ data, today }) {
         {columns.map((week, i) => (
           <div className="heat-week" key={i}>
             {week.map((date) => (
-              <div
+              <span
                 key={date}
+                role="img"
                 className={`heat-cell ${data.set.has(date) ? "trained" : ""} ${date > today ? "future" : ""} ${date === today ? "today" : ""}`}
                 title={`${date}: ${date > today ? "upcoming" : data.set.has(date) ? "training day" : "rest / no record"}`}
                 aria-label={`${date}: ${date > today ? "upcoming" : data.set.has(date) ? "training day" : "rest or no record"}`}
@@ -87,31 +112,36 @@ export function Rhythm({ data, today }) {
         <p>
           <strong>{data.thisWeek}</strong> / {data.target} days this week
         </p>
-        <span>Rest days are part of the plan.</span>
+        <div className="heat-legend">
+          <span>
+            <i className="legend-trained" /> Trained
+          </span>
+          <span>
+            <i className="legend-rest" /> No record
+          </span>
+          <span>
+            <i className="legend-today" /> Today
+          </span>
+        </div>
       </div>
     </section>
   );
 }
 export function LiftRecords({ data, unit }) {
   return (
-    <section className="panel records">
-      <div className="section-heading">
-        <h2>YOUR STRONGEST LIFTS</h2>
-      </div>
-      <div className="lift-grid">
+    <section className="current-lifts" aria-labelledby="current-lifts-title">
+      <h2 id="current-lifts-title">Current PRs</h2>
+      <dl className="current-lift-grid">
         {Object.entries(LIFTS).map(([id, name]) => (
-          <div className="lift-record" key={id}>
-            <Icon name="weight" size={29} />
-            <span>{name.replace("Back ", "").replace(" Press", "")}</span>
-            <strong>
-              {weight(data.records[id]?.weight, unit)} <small>{unit}</small>
-            </strong>
+          <div key={id}>
+            <dt>{name.replace("Back ", "").replace(" Press", "")}</dt>
+            <dd>
+              {weight(data.records[id]?.weight, unit)} <span>{unit}</span>
+            </dd>
           </div>
         ))}
-      </div>
-      <p className="small muted">
-        Best recorded singles · All-time personal records
-      </p>
+      </dl>
+      <p className="small muted">Best recorded singles</p>
     </section>
   );
 }
@@ -119,7 +149,7 @@ export function ActivityList({ events, unit, limit = 6 }) {
   if (!events.length)
     return (
       <p className="empty-copy">
-        Your training story starts with a connected workout history.
+        No sessions yet. Connect a tracker to see your training history.
       </p>
     );
   return (
@@ -137,27 +167,33 @@ export function ActivityList({ events, unit, limit = 6 }) {
                 day: "numeric",
               })}{" "}
               ·{" "}
-              {e.source === "bulgarian" ? "Auto Bulgarian" : e.source === "bodyweight" ? `Away Strength · ${e.variant}` : "Accessory Lifts"}
+              {e.source === "bulgarian"
+                ? "Auto Bulgarian"
+                : e.source === "bodyweight"
+                  ? `Away Strength · ${e.variant}`
+                  : "Accessory Lifts"}
             </span>
           </div>
           <div className="activity-result">
             <strong>
-              {e.source === "bodyweight" ? `${e.totalReps} reps` : e.weight != null
-                ? e.unit === "lb"
-                  ? `${weight(e.weight, unit)} ${unit}`
-                  : `${e.weight} ${e.unit}`
-                : e.weightLabel || "—"}
+              {e.source === "bodyweight"
+                ? `${e.totalReps} reps`
+                : e.weight != null
+                  ? e.unit === "lb"
+                    ? `${weight(e.weight, unit)} ${unit}`
+                    : `${e.weight} ${e.unit}`
+                  : e.weightLabel || "—"}
             </strong>
             <span>
               {e.outcome === "skipped"
                 ? "Skipped"
                 : e.outcome === "in-progress"
                   ? "In progress"
-                : e.success
-                  ? "Completed"
-                  : e.singleCompleted
-                    ? "Single completed"
-                    : "Attempt logged"}
+                  : e.success
+                    ? "Completed"
+                    : e.singleCompleted
+                      ? "Single completed"
+                      : "Attempt logged"}
             </span>
           </div>
         </article>

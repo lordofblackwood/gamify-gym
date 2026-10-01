@@ -3,12 +3,7 @@ import { useDashboard } from "./lib/useDashboard";
 import { dashboard } from "./lib/scoring.mjs";
 import { demoSnapshots } from "./lib/demo.mjs";
 import { Brand, Icon } from "./components/Icons";
-import {
-  ConsistencyPanel,
-  Rhythm,
-  LiftRecords,
-  ActivityList,
-} from "./components/Dashboard";
+import { ConsistencyPanel, ActivityList } from "./components/Dashboard";
 import { Journey } from "./components/Journey";
 import { FighterProfile } from "./components/FighterProfile";
 import { StrengthReferences } from "./components/StrengthReferences";
@@ -99,7 +94,7 @@ export default function App() {
   );
   const hasData = data.events.length > 0;
   return (
-    <div className="app-shell">
+    <div className={`app-shell${tab === "home" ? " home-page" : ""}`}>
       <aside className="sidebar">
         <Brand />
         <nav aria-label="Main navigation">
@@ -115,11 +110,6 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <p>
-          Your effort.
-          <br />
-          Your evolution.
-        </p>
       </aside>
       <main>
         <header className="mobile-header">
@@ -162,10 +152,17 @@ export default function App() {
           <>
             <div className="page-heading home-heading">
               <div>
-                <h1>
-                  Your power. <span className="lime">Your story.</span>
-                </h1>
-                <p>Your strength, translated into Dragon Ball.</p>
+                <h1>Training overview</h1>
+                <p>
+                  {new Date(`${store.today}T12:00:00`).toLocaleDateString(
+                    undefined,
+                    {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                    },
+                  )}
+                </p>
               </div>
               <button
                 className="desktop-connect secondary-button"
@@ -178,8 +175,10 @@ export default function App() {
             {!hasData && !demo ? (
               <div className="welcome">
                 <div>
-                  <strong>Let your history do the talking.</strong>
-                  <p>Pair your trackers once to reveal your form and rank.</p>
+                  <strong>Connect your training history</strong>
+                  <p>
+                    Your workouts, personal records and progress in one place.
+                  </p>
                 </div>
                 <div className="button-row">
                   <button
@@ -209,35 +208,29 @@ export default function App() {
               />
               <ConsistencyPanel
                 data={data.consistency}
+                today={store.today}
                 onRank={() => navigate("rank")}
               />
             </div>
             <details className="panel dashboard-disclosure">
-              <summary>
-                Training details{" "}
-                <span>Rhythm, best lifts & recent sessions</span>
-              </summary>
+              <summary>Recent sessions</summary>
               <div className="dashboard-disclosure-body">
-                <Rhythm data={data.consistency} today={store.today} />
-                <div className="lower-grid">
-                  <LiftRecords data={data.strength} unit={store.prefs.unit} />
-                  <section className="panel recent">
-                    <div className="section-heading">
-                      <h2>RECENT TRAINING</h2>
-                      <button
-                        className="text-button"
-                        onClick={() => navigate("history")}
-                      >
-                        View all <Icon name="arrow" size={15} />
-                      </button>
-                    </div>
-                    <ActivityList
-                      events={data.events}
-                      unit={store.prefs.unit}
-                      limit={4}
-                    />
-                  </section>
-                </div>
+                <section className="panel recent">
+                  <div className="section-heading">
+                    <h2>Recent training</h2>
+                    <button
+                      className="text-button"
+                      onClick={() => navigate("history")}
+                    >
+                      View all <Icon name="arrow" size={15} />
+                    </button>
+                  </div>
+                  <ActivityList
+                    events={data.events}
+                    unit={store.prefs.unit}
+                    limit={4}
+                  />
+                </section>
               </div>
             </details>
             <details className="panel dashboard-disclosure">

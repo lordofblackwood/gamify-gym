@@ -1,0 +1,197 @@
+/* Keep the original transformation and rank cards, with their training data inside. */
+.home-page .home-heading h1 {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+}
+
+.home-page .home-heading p {
+  font-size: 12px;
+  margin-top: 7px;
+}
+
+.home-page .section-heading h2 {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.current-lifts {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.current-lifts h2 {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.current-lift-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 12px 0 8px;
+}
+
+.current-lift-grid > div {
+  min-width: 0;
+  padding-left: 14px;
+  border-left: 1px solid var(--border);
+}
+
+.current-lift-grid > div:first-child {
+  border: 0;
+  padding-left: 0;
+}
+
+.current-lift-grid dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.current-lift-grid dd {
+  margin: 4px 0 0;
+  font:
+    600 30px/1.2 "Barlow Condensed",
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.current-lift-grid dd span {
+  font:
+    400 11px/1.5 Inter,
+    system-ui,
+    sans-serif;
+  color: var(--muted);
+}
+
+.current-lifts > p {
+  font-size: 10px;
+}
+
+.consistency-with-calendar {
+  min-width: 0;
+}
+
+.consistency-with-calendar > .consistency-panel {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.consistency-with-calendar .rhythm {
+  padding: 18px 16px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+
+.consistency-with-calendar .section-heading {
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.consistency-with-calendar .section-heading > .small {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.consistency-with-calendar .heatmap,
+.heat-months {
+  display: grid;
+  grid-template-columns: 14px repeat(12, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.heat-months {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.consistency-with-calendar .heat-week,
+.consistency-with-calendar .day-labels {
+  grid-template-rows: repeat(7, 15px);
+  gap: 5px;
+}
+
+.consistency-with-calendar .day-labels span {
+  line-height: 15px;
+}
+
+.consistency-with-calendar .heat-cell {
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+.consistency-with-calendar .heat-cell.trained,
+.legend-trained {
+  background: #afc889;
+}
+
+.consistency-with-calendar .rhythm-summary {
+  position: static;
+  transform: none;
+  width: auto;
+  border: 0;
+  border-top: 1px solid var(--border);
+  padding: 14px 0 0;
+  margin-top: 18px;
+}
+
+.consistency-with-calendar .rhythm-summary p,
+.consistency-with-calendar .rhythm-summary strong {
+  display: inline;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.consistency-with-calendar .rhythm-summary strong {
+  font-weight: 700;
+}
+
+.heat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.heat-legend span,
+.rank-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.heat-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+.legend-rest {
+  background: #1e2b39;
+}
+
+.legend-today {
+  border: 1px solid #8b98b0;
+}
+
+@media (max-width: 649px) {
+  .home-page .home-heading h1 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 370px) {
+  .current-lift-grid > div {
+    padding-left: 10px;
+  }
+
+  .current-lift-grid dd {
+    font-size: 27px;
+  }
+}

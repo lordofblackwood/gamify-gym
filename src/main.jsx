@@ -8,6 +8,7 @@ import "@fontsource/inter/latin-700.css";
 import "@fontsource/barlow-condensed/latin-600.css";
 import "@fontsource/barlow-condensed/latin-700.css";
 import "./styles.css";
+import "./home.css";
 import App from "./App";
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
