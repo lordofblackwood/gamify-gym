@@ -20,6 +20,12 @@ const sources = [
     "Air squats, push-ups & glute bridges",
     "https://lordofblackwood.github.io/away-strength/",
   ],
+  [
+    "smolov",
+    "Smolov SBD",
+    "Actual squat, bench & deadlift sets and meet preparation",
+    "https://smolov-sbd.micak27.chatgpt.site/",
+  ],
 ];
 export function Connect({ store, onDemo, install }) {
   const [input, setInput] = useState("");
@@ -199,6 +205,7 @@ export function Connect({ store, onDemo, install }) {
           </li>
           <li>Repeat in your existing Accessory Lifts home-screen app.</li>
           <li>For bodyweight workouts, install Away Strength from its link above. In its Sync tab, paste the same code and tap <strong>Connect dashboard</strong>.</li>
+          <li>For Smolov SBD, use the same code in Settings. Its independent source keeps Auto Bulgarian history intact.</li>
         </ol>
         <p>
           Keep logging in your original apps. After each change, the open

@@ -169,6 +169,8 @@ export function ActivityList({ events, unit, limit = 6 }) {
               ·{" "}
               {e.source === "bulgarian"
                 ? "Auto Bulgarian"
+                : e.source === "smolov"
+                  ? `Smolov SBD · ${e.kind === "warmup" ? "warm-up" : `${e.reps} actual reps`}`
                 : e.source === "bodyweight"
                   ? `Away Strength · ${e.variant}`
                   : "Accessory Lifts"}

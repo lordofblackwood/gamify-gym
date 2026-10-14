@@ -7,11 +7,13 @@ export const SOURCE_KEYS = {
   bulgarian: "auto-bulgarian:state:v2",
   accessory: "accessory-lift-tracker-v1",
   bodyweight: BODYWEIGHT_KEY,
+  smolov: "smolov-sbd:encrypted-history:v1",
 };
 export const SOURCE_NAMES = {
   bulgarian: "Auto Bulgarian",
   accessory: "Accessory Lifts",
   bodyweight: "Away Strength",
+  smolov: "Smolov SBD",
 };
 export const LIFTS = {
   backSquat: "Back Squat",
@@ -203,6 +205,16 @@ export function validateSnapshot(s, source) {
     "The synced history format is invalid.",
   );
   const ids = new Set();
+  if (source === "smolov") {
+    check(s.contract === "smolov-v1" && Array.isArray(s.sessions), "Unsupported Smolov snapshot contract.");
+    const sessionIds = new Set();
+    for (const session of s.sessions) {
+      check(session && typeof session.id === "string" && !sessionIds.has(session.id) && Number.isInteger(session.revision) && session.revision >= 1 && dateValid(session.trainingDate) && dateValid(session.scheduledDate) && typeof session.startedAt === "string" && /(Z|[+-]\d{2}:\d{2})$/.test(session.startedAt) && Number.isFinite(Date.parse(session.startedAt)) && typeof session.updatedAt === "string" && /(Z|[+-]\d{2}:\d{2})$/.test(session.updatedAt) && Number.isFinite(Date.parse(session.updatedAt)) && ["completed", "partial", "skipped"].includes(session.status) && typeof session.notes === "string", "Invalid Smolov session revision.");
+      if (session.finishedAt !== undefined) check(typeof session.finishedAt === "string" && /(Z|[+-]\d{2}:\d{2})$/.test(session.finishedAt) && Number.isFinite(Date.parse(session.finishedAt)), "Invalid Smolov finish timestamp.");
+      sessionIds.add(session.id);
+    }
+    check(s.sessions.length <= 10000 && s.events.every(event => sessionIds.has(event.sessionId)), "Missing Smolov session identity.");
+  }
   for (const e of s.events) {
     check(
       e &&
@@ -224,6 +236,14 @@ export function validateSnapshot(s, source) {
         e.exercise in LIFTS && e.unit === "lb" && finite(e.weight),
         "Invalid synced lift.",
       );
+    if (source === "smolov") {
+      const session = s.sessions.find(session => session.id === e.sessionId);
+      check(Object.hasOwn(LIFTS, e.exercise) && e.unit === "lb" && typeof e.setId === "string" && e.revision === session.revision && typeof e.occurredAt === "string" && /(Z|[+-]\d{2}:\d{2})$/.test(e.occurredAt) && Number.isFinite(Date.parse(e.occurredAt)) && ["completed", "failed", "skipped"].includes(e.outcome) && ["working", "calibration", "final-single", "warmup", "meet-attempt"].includes(e.kind) && e.sets === 1 && Number.isInteger(e.reps) && e.reps >= 0 && e.reps <= 1000 && typeof e.notes === "string" && typeof e.pain === "boolean" && ["lb", "kg"].includes(e.originalUnit), "Invalid Smolov set evidence.");
+      check(e.outcome === "skipped" ? e.weight === null && e.originalWeight === null && e.reps === 0 && !e.success && !e.singleCompleted && !e.countsDay : finite(e.weight) && finite(e.originalWeight) && e.success === (e.outcome === "completed" && e.reps > 0) && e.singleCompleted === (e.success && e.reps === 1 && e.kind !== "warmup") && e.countsDay === (e.reps > 0 || e.outcome === "failed"), "Smolov actual evidence does not match its outcome.");
+      if (e.rpe !== undefined) check(["calibration", "final-single"].includes(e.kind) && e.outcome !== "skipped" && typeof e.rpe === "number" && Number.isFinite(e.rpe) && e.rpe >= 0 && e.rpe <= 10, "Invalid Smolov RPE.");
+      if (e.variant !== undefined) check(typeof e.variant === "string" && e.variant.length <= 120, "Invalid Smolov lift variant.");
+      if (e.attemptNumber !== undefined) check(e.kind === "meet-attempt" && [1, 2, 3].includes(e.attemptNumber), "Invalid meet attempt number.");
+    }
     if (e.repSet !== undefined)
       check(
         source === "bulgarian" &&

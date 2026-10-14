@@ -21,6 +21,7 @@ export function History({ data, unit, onUnit }) {
           {[
             ["all", "All training"],
             ["bulgarian", "Main lifts"],
+            ["smolov", "Smolov SBD"],
             ["accessory", "Accessories"],
             ["bodyweight", "Bodyweight"],
           ].map(([id, label]) => (

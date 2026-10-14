@@ -17,7 +17,7 @@ export function strength(events, profile = {}) {
   const records = Object.fromEntries(Object.keys(LIFTS).map((k) => [k, null]));
   for (const e of events)
     if (
-      e.source === "bulgarian" &&
+      ["bulgarian", "smolov"].includes(e.source) &&
       e.singleCompleted &&
       e.exercise in records &&
       (records[e.exercise]?.weight ?? -1) < e.weight
