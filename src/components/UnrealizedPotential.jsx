@@ -91,14 +91,14 @@ export function UnrealizedPotential({ strength, unit }) {
           </div>
           <p className="small muted">
             Estimated 1RM (e1RM) uses the Epley formula: weight × (1 + reps ÷
-            30), from completed Auto Bulgarian backoff sets of 2–10 reps. Reps
+            30), from completed Auto Bulgarian backoff sets and Smolov working sets of 2–10 reps. Reps
             are per set. Each lift uses the higher of its best single and
             estimate for potential only.
           </p>
           <p className="small muted">
             These are historical estimates, not verified maxes or prescribed
             attempts. Only successful singles earn actual power. Updating and
-            opening Auto Bulgarian online syncs completed rep-set evidence
+            opening Auto Bulgarian or Smolov SBD online syncs completed rep-set evidence
             automatically.
           </p>
         </details>

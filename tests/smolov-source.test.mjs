@@ -65,3 +65,53 @@ test('snapshot corrections remove previous evidence without modifying the older 
   assert.equal(dashboard({ smolov: after }, '2026-10-14').strength.complete, false);
   assert.deepEqual(before, saved);
 });
+
+function workingSet(source, changes = {}) {
+  const { rpe, ...single } = source.events[1];
+  return { ...single, id: 'working:bench', setId: 'working:bench', kind: 'working',
+    weight: 190, originalWeight: 190, reps: 6, singleCompleted: false, ...changes };
+}
+
+test('completed Smolov working sets estimate potential without changing earned power', () => {
+  const source = snapshot(), baseline = dashboard({ smolov: source }, '2026-10-14');
+  source.events.push(workingSet(source));
+  validateSnapshot(source, 'smolov');
+  const scored = dashboard({ smolov: source }, '2026-10-14');
+  assert.equal(scored.strength.total, 750);
+  assert.deepEqual(scored.strength.progression, baseline.strength.progression);
+  const bench = scored.strength.potential.lifts.find(lift => lift.id === 'benchPress');
+  assert.equal(bench.evidence.estimated, 228);
+  assert.equal(bench.evidence.reps, 6);
+  assert.equal(bench.projected, 228);
+  assert.equal(scored.strength.potential.total, 778);
+  assert.ok(scored.strength.potential.hasPotential);
+});
+
+test('Smolov potential ignores failed, skipped, warm-up, single and high-rep sets', () => {
+  for (const changes of [
+    { outcome: 'failed', success: false },
+    { outcome: 'skipped', success: false, weight: null, originalWeight: null, reps: 0, countsDay: false },
+    { kind: 'warmup' },
+    { reps: 1, singleCompleted: true, weight: 190 },
+    { reps: 11 },
+  ]) {
+    const source = snapshot();
+    source.events.push(workingSet(source, changes));
+    validateSnapshot(source, 'smolov');
+    assert.equal(dashboard({ smolov: source }, '2026-10-14').strength.potential.hasEvidence, false);
+  }
+});
+
+test('Smolov potential selects the best set across sources and respects corrections and future dates', () => {
+  const source = snapshot();
+  const working = workingSet(source);
+  source.events.push(working, { ...working, id: 'lighter', setId: 'lighter', weight: 180, originalWeight: 180 });
+  validateSnapshot(source, 'smolov');
+  const bulgarian = { ...working, source: 'bulgarian', id: 'bulgarian', singleCompleted: true, weight: 200, reps: 1, repSet: { weight: 195, reps: 6 } };
+  const mixed = dashboard({ smolov: source, bulgarian: { events: [bulgarian] } }, '2026-10-14');
+  assert.equal(mixed.strength.potential.lifts.find(lift => lift.id === 'benchPress').evidence.estimated, 234);
+  source.events = source.events.filter(event => event.kind !== 'working');
+  assert.equal(dashboard({ smolov: source }, '2026-10-14').strength.potential.hasEvidence, false);
+  source.events.push({ ...working, date: '2026-10-15' });
+  assert.equal(dashboard({ smolov: source }, '2026-10-14').strength.potential.hasEvidence, false);
+});

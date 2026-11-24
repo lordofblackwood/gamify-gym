@@ -23,17 +23,20 @@ export function unrealizedPotential(events, actualRecords, profile = {}) {
   );
   for (const event of events) {
     if (
-      event.source !== "bulgarian" ||
       !event.success ||
       event.outcome !== "completed" ||
-      !event.singleCompleted ||
       event.unit !== "lb" ||
       !Object.hasOwn(estimates, event.exercise)
     )
       continue;
+    const repSet = event.source === "bulgarian" && event.singleCompleted
+      ? event.repSet
+      : event.source === "smolov" && event.kind === "working" && event.sets === 1
+        ? event
+        : null;
     const estimated = estimatedOneRepMax(
-      event.repSet?.weight,
-      event.repSet?.reps,
+      repSet?.weight,
+      repSet?.reps,
     );
     const previous = estimates[event.exercise];
     if (
@@ -44,8 +47,8 @@ export function unrealizedPotential(events, actualRecords, profile = {}) {
     ) {
       estimates[event.exercise] = {
         estimated,
-        weight: event.repSet.weight,
-        reps: event.repSet.reps,
+        weight: repSet.weight,
+        reps: repSet.reps,
         date: event.date,
         eventId: event.id,
       };
